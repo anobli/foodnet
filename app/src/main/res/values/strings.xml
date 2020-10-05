@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">FoodNet</string>
+    <string name="food">Food</string>
+    <string name="expDate">Expiration Date</string>
+    <string name="prodDate">Production Date</string>
+    <string name="openingDate">Opening Date</string>
+    <string name="save">Save</string>
+    <string name="foodHint">Food name</string>
+    <string name="prodDateHint">Production date</string>
+    <string name="expDateHint">Expiration date</string>
+    <string name="openingDateHint">Opening date</string>
+</resources>
