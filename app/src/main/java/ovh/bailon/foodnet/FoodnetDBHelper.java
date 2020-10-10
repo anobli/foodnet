@@ -95,6 +95,14 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean openDatingExists(int id) {
+        OpenDating openDating = get(id);
+
+        if (openDating == null)
+            return false;
+        return true;
+    }
+
     public List<OpenDating> getAll() {
         List<OpenDating> noteList = new ArrayList<OpenDating>();
         String selectQuery = "SELECT  * FROM " + TABLE_NOTE;
