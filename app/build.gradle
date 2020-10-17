@@ -18,6 +18,22 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            Properties properties = new Properties()
+
+            def propertiesFile = project.rootProject.file('local.properties')
+            if (propertiesFile.exists()) {
+                properties.load(propertiesFile.newDataInputStream())
+            }
+
+            resValue("string", "mobileads_app_id", properties.getProperty('MOBILEADS_APP_ID'))
+            resValue("string", "banner_ad_main",  properties.getProperty('BANNER_AD_MAIN'))
+            resValue("string", "banner_ad_list", properties.getProperty('BANNER_AD_LIST'))
+        }
+
+        debug {
+            resValue("string","mobileads_app_id","ca-app-pub-3940256099942544~3347511713")
+            resValue("string","banner_ad_main","ca-app-pub-3940256099942544/6300978111")
+            resValue("string","banner_ad_list","ca-app-pub-3940256099942544/6300978111")
         }
     }
 }
@@ -29,10 +45,12 @@ dependencies {
     implementation 'androidx.print:print:1.0.0'
     implementation 'com.google.zxing:core:3.2.1'
     implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.google.android.gms:play-services-ads:19.4.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
 }
 
 apply plugin: 'checkstyle'

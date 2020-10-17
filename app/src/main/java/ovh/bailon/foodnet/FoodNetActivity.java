@@ -24,6 +24,12 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 
@@ -47,6 +53,12 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_net);
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
 
         db = new FoodnetDBHelper(this);
         df = DateFormat.getDateInstance(DateFormat.MEDIUM);
@@ -73,6 +85,11 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
                 editTextOpeningDate.setText(openDating.getOpeningDate());
             }
         }
+
+        AdView adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+
     }
 
     private void updateLabel(EditText v, Calendar calendar,
