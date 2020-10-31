@@ -113,8 +113,10 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
     public boolean openDatingExists(int id) {
         OpenDating openDating = get(id);
 
-        if (openDating == null)
+        if (openDating == null) {
             return false;
+        }
+
         return true;
     }
 

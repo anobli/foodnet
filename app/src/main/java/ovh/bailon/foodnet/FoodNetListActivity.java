@@ -15,7 +15,6 @@
 
 package ovh.bailon.foodnet;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;

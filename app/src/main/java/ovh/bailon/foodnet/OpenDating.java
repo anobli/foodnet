@@ -15,10 +15,11 @@
 
 package ovh.bailon.foodnet;
 
-import android.text.format.DateUtils;
+import android.content.Context;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -186,5 +187,27 @@ public class OpenDating {
      */
     public void setOpeningDate(String openingDate) {
         this.openingDate = setDateOrNull(openingDate);
+    }
+
+    public void scheduleNotifications(Context context) {
+        if (expDate == null) {
+            return;
+        }
+
+        FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(expDate);
+        calendar.add(Calendar.DATE, -1);
+        FoodNetNotification.scheduleNotification(context, food, calendar.getTime().getTime());
+    }
+
+    public void cancelNotifications(Context context) {
+        if (expDate == null) {
+            return;
+        }
+
+        FoodNetNotification.cancelNotification(context, food);
+        FoodNetNotification.cancelNotification(context, food);
     }
 }

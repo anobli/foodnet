@@ -18,7 +18,6 @@ package ovh.bailon.foodnet;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,6 +82,7 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
                 int position = (Integer) view.getTag();
 
                 OpenDating openDating = getItem(position);
+                openDating.cancelNotifications(context);
                 db.delete(openDating);
                 list.clear();
                 list.addAll(db.getAll());

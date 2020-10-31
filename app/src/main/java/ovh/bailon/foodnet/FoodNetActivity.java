@@ -16,7 +16,9 @@
 package ovh.bailon.foodnet;
 
 import android.app.DatePickerDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -90,6 +92,12 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
+        ComponentName receiver = new ComponentName(this, FoodNetBootReceiver.class);
+        PackageManager pm = getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
     }
 
     private void updateLabel(EditText v, Calendar calendar,
@@ -142,6 +150,7 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
                     editTextExpDate.getText().toString(),
                     editTextOpeningDate.getText().toString());
             if (openDating == null) {
+                newOpenDating.scheduleNotifications(this);
                 db.add(newOpenDating);
             } else {
                 db.update(newOpenDating);
