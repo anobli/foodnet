@@ -29,5 +29,5 @@
     <string name="channel_description">Notifie l\'utilisateur que la nourriture va expirer</string>
     <string name="notification_title">Votre nourriture va expirer</string>
     <string name="notification_content">La nourriture "%s" expire bientôt</string>
-
+    <string name="account">Compte</string>
 </resources>
