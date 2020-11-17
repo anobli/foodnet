@@ -33,15 +33,17 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class FoodNetActivity extends AppCompatActivity implements View.OnClickListener {
+public class FoodNetActivity extends AppCompatActivity
+        implements View.OnClickListener, OnDataEventListener {
     private OpenDating openDating = null;
     private EditText editTextFood;
     private EditText editTextProdDate;
     private EditText editTextExpDate;
     private EditText editTextOpeningDate;
-    private FoodnetDBHelper db;
+    private IFoodnetDBHelper db;
     private String id = null;
     private String saveExit = null;
 
@@ -63,6 +65,7 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
         });
 
         db = new FoodnetDBHelper(this);
+        db.registerOnDataChange(this);
         df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
         editTextFood = findViewById(R.id.editTextFood);
@@ -76,16 +79,7 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
         if (data != null) {
             id = data.getQueryParameter("id");
             saveExit = data.getQueryParameter("exit");
-            openDating = db.get(Integer.parseInt(id));
-
-            if (openDating == null) {
-                return;
-            } else {
-                editTextFood.setText(openDating.getFood());
-                editTextProdDate.setText(openDating.getProdDate());
-                editTextExpDate.setText(openDating.getExpDate());
-                editTextOpeningDate.setText(openDating.getOpeningDate());
-            }
+            db.requestGet(Long.parseLong(id));
         }
 
         AdView adView = findViewById(R.id.adView);
@@ -173,6 +167,22 @@ public class FoodNetActivity extends AppCompatActivity implements View.OnClickLi
                     openingCalendar.get(Calendar.YEAR),
                     openingCalendar.get(Calendar.MONTH),
                     openingCalendar.get(Calendar.DAY_OF_MONTH)).show();
+        }
+    }
+
+    @Override
+    public void onGetAllReady(ArrayList<OpenDating> list) {
+
+    }
+
+    @Override
+    public void onGetReady(OpenDating openDating) {
+        if (openDating != null) {
+            editTextFood.setText(openDating.getFood());
+            editTextProdDate.setText(openDating.getProdDate());
+            editTextExpDate.setText(openDating.getExpDate());
+            editTextOpeningDate.setText(openDating.getOpeningDate());
+            this.openDating = openDating;
         }
     }
 }

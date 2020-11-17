@@ -39,8 +39,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
 
-public class FoodNetListActivity extends AppCompatActivity implements View.OnClickListener {
-    private FoodnetDBHelper db;
+public class FoodNetListActivity extends AppCompatActivity
+        implements View.OnClickListener, OnDataEventListener {
+    private IFoodnetDBHelper db;
     private final ArrayList<OpenDating> netList = new ArrayList<OpenDating>();
     private ArrayAdapter<OpenDating> listViewAdapter;
     private ListView listView;
@@ -57,6 +58,7 @@ public class FoodNetListActivity extends AppCompatActivity implements View.OnCli
         });
 
         db = new FoodnetDBHelper(this);
+        db.registerOnDataChange(this);
         listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
         this.listView.setAdapter(this.listViewAdapter);
@@ -70,9 +72,7 @@ public class FoodNetListActivity extends AppCompatActivity implements View.OnCli
     protected void onStart() {
         super.onStart();
 
-        netList.clear();
-        netList.addAll(db.getAll());
-        listViewAdapter.notifyDataSetChanged();
+        db.requestGetAll();
     }
 
     public Bitmap appendImages(Bitmap bmp1, Bitmap bmp2, boolean vertical) {
@@ -107,9 +107,9 @@ public class FoodNetListActivity extends AppCompatActivity implements View.OnCli
         Random random = new Random();
         int sn;
 
-        do {
+//        do {
             sn = random.nextInt(Integer.MAX_VALUE);
-        } while (db.openDatingExists(sn));
+//        } while (db.openDatingExists(sn));
 
         String text = "foodnet://foodnet.bailon.ovh?id=" + String.format(Locale.US, "%010d", sn);
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
@@ -151,5 +151,17 @@ public class FoodNetListActivity extends AppCompatActivity implements View.OnCli
         PrintHelper photoPrinter = new PrintHelper(this);
         photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
         photoPrinter.printBitmap("QR code", sheet);
+    }
+
+    @Override
+    public void onGetAllReady(ArrayList<OpenDating> list) {
+        netList.clear();
+        netList.addAll(list);
+        listViewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onGetReady(OpenDating openDating) {
+
     }
 }

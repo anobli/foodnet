@@ -19,15 +19,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-public class FoodNetBootReceiver extends BroadcastReceiver {
+import java.util.ArrayList;
+
+public class FoodNetBootReceiver extends BroadcastReceiver implements OnDataEventListener {
+    private Context context;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        FoodnetDBHelper db = new FoodnetDBHelper(context);
+        this.context = context;
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            for (OpenDating openDating : db.getAll()) {
-                openDating.scheduleNotifications(context);
-            }
+            IFoodnetDBHelper db = new FoodnetDBHelper(context);
+            db.registerOnDataChange(this);
         }
+    }
+
+    @Override
+    public void onGetAllReady(ArrayList<OpenDating> list) {
+        for (OpenDating openDating : list) {
+            openDating.scheduleNotifications(context);
+        }
+    }
+
+    @Override
+    public void onGetReady(OpenDating openDating) {
+
     }
 }

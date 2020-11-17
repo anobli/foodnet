@@ -29,11 +29,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import java.util.ArrayList;
 
 public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
-    private FoodnetDBHelper db;
+    private IFoodnetDBHelper db;
     private Context context;
     private ArrayList<OpenDating> list;
 
-    public FoodNetAdapter(Context context, ArrayList<OpenDating> list, FoodnetDBHelper db) {
+    public FoodNetAdapter(Context context, ArrayList<OpenDating> list, IFoodnetDBHelper db) {
         super(context, 0, list);
         this.context = context;
         this.list = list;
@@ -84,9 +84,6 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
                 OpenDating openDating = getItem(position);
                 openDating.cancelNotifications(context);
                 db.delete(openDating);
-                list.clear();
-                list.addAll(db.getAll());
-                notifyDataSetChanged();
             }
         });
 

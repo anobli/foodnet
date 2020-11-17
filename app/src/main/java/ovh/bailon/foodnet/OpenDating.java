@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class OpenDating {
-    private int id;
+    private long id;
     private String food;
     private Date prodDate;
     private Date expDate;
@@ -43,7 +43,7 @@ public class OpenDating {
      * @throws NullPointerException if food is null
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
-    public OpenDating(int id, String food, String prodDate, String expDate,
+    public OpenDating(long id, String food, String prodDate, String expDate,
                       String openingDate, Locale locale) {
         this.id = id;
         this.food = food;
@@ -76,7 +76,7 @@ public class OpenDating {
      * @throws NullPointerException if food is null
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
-    public OpenDating(int id, String food, String prodDate, String expDate,
+    public OpenDating(long id, String food, String prodDate, String expDate,
                       String openingDate) {
         this(id, food, prodDate, expDate, openingDate, Locale.getDefault());
     }
@@ -85,7 +85,7 @@ public class OpenDating {
      * Get the id.
      * @return The id of the object
      */
-    public int getID() {
+    public long getID() {
         return id;
     }
 

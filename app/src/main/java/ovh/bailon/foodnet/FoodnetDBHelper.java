@@ -23,10 +23,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-public class FoodnetDBHelper extends SQLiteOpenHelper {
+public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
 
     private static final int DATABASE_VERSION = 1;
@@ -41,6 +40,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
 
     private Context context;
     private Locale locale;
+    private OnDataEventListener listener;
 
     public FoodnetDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -82,7 +82,19 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public OpenDating get(int id) {
+    @Override
+    public void requestGet(long id) {
+        OpenDating openDating = get(id);
+        listener.onGetReady(openDating);
+    }
+
+    @Override
+    public void requestGetAll() {
+        ArrayList<OpenDating> list = getAll();
+        listener.onGetAllReady(list);
+    }
+
+    private OpenDating get(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_NOTE, new String[] {
@@ -120,8 +132,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public List<OpenDating> getAll() {
-        List<OpenDating> noteList = new ArrayList<OpenDating>();
+    private ArrayList<OpenDating> getAll() {
+        ArrayList<OpenDating> noteList = new ArrayList<OpenDating>();
         String selectQuery = "SELECT  * FROM " + TABLE_NOTE;
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -154,8 +166,11 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.update(TABLE_NOTE, values, COLUMN_ID + " = ?",
+        int ret = db.update(TABLE_NOTE, values, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(openDating.getID())});
+        requestGetAll();
+
+        return ret;
     }
 
     public void delete(OpenDating openDating) {
@@ -167,5 +182,11 @@ public class FoodnetDBHelper extends SQLiteOpenHelper {
         db.delete(TABLE_NOTE, COLUMN_ID + " = ?",
                 new String[] { String.valueOf(openDating.getID()) });
         db.close();
+        requestGetAll();
+    }
+
+    @Override
+    public void registerOnDataChange(OnDataEventListener listener) {
+        this.listener = listener;
     }
 }
