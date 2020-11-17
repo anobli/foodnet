@@ -31,7 +31,13 @@ public class FoodNetBootReceiver extends BroadcastReceiver implements OnDataEven
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            IFoodnetDBHelper db = new FoodnetDBHelper(context);
+            IFoodnetDBHelper db;
+            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (currentUser == null) {
+                db = new FoodnetDBHelper(context);
+            } else {
+                db = new FirestoreDBHelper(context);
+            }
             db.registerOnDataChange(this);
         }
     }

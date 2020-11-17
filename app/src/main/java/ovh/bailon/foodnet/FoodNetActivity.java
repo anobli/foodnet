@@ -31,6 +31,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -64,7 +66,12 @@ public class FoodNetActivity extends AppCompatActivity
             }
         });
 
-        db = new FoodnetDBHelper(this);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            db = new FoodnetDBHelper(this);
+        } else {
+            db = new FirestoreDBHelper(this);
+        }
         db.registerOnDataChange(this);
         df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 

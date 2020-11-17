@@ -72,7 +72,12 @@ public class FoodNetListActivity extends AppCompatActivity
             }
         });
 
-        db = new FoodnetDBHelper(this);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            db = new FoodnetDBHelper(this);
+        } else {
+            db = new FirestoreDBHelper(this);
+        }
         db.registerOnDataChange(this);
         listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
@@ -223,6 +228,8 @@ public class FoodNetListActivity extends AppCompatActivity
                             public void onComplete(@NonNull Task<Void> task) {
                                 invalidateOptionsMenu();
                                 db = new FoodnetDBHelper(FoodNetListActivity.this);
+                                db.registerOnDataChange(FoodNetListActivity.this);
+                                db.requestGetAll();
                             }
                         });
                 return true;
@@ -241,6 +248,9 @@ public class FoodNetListActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 invalidateOptionsMenu();
+                db = new FirestoreDBHelper(this);
+                db.registerOnDataChange(this);
+                db.requestGetAll();
             }
         }
     }
