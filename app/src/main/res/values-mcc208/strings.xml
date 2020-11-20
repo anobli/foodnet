@@ -30,4 +30,6 @@
     <string name="notification_title">Votre nourriture va expirer</string>
     <string name="notification_content">La nourriture "%s" expire bientôt</string>
     <string name="account">Compte</string>
+    <string name="group">Groupe</string>
+    <string name="textViewInviteTitle">Gerer les personnes pouvant voir, ajouter ou supprimer de la nouriture</string>
 </resources>

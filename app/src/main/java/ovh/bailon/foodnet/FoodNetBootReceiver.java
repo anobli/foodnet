@@ -18,6 +18,7 @@ package ovh.bailon.foodnet;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +37,9 @@ public class FoodNetBootReceiver extends BroadcastReceiver implements OnDataEven
             if (currentUser == null) {
                 db = new FoodnetDBHelper(context);
             } else {
-                db = new FirestoreDBHelper(context);
+                SharedPreferences sharedPreferences = context.getSharedPreferences("foodnet", Context.MODE_PRIVATE);
+                String group = sharedPreferences.getString("group", currentUser.getUid());
+                db = new FirestoreDBHelper(context, group);
             }
             db.registerOnDataChange(this);
         }

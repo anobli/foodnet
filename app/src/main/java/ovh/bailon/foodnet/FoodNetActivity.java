@@ -18,6 +18,7 @@ package ovh.bailon.foodnet;
 import android.app.DatePickerDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,7 +71,9 @@ public class FoodNetActivity extends AppCompatActivity
         if (currentUser == null) {
             db = new FoodnetDBHelper(this);
         } else {
-            db = new FirestoreDBHelper(this);
+            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+            String group = sharedPreferences.getString("group", currentUser.getUid());
+            db = new FirestoreDBHelper(this, group);
         }
         db.registerOnDataChange(this);
         df = DateFormat.getDateInstance(DateFormat.MEDIUM);

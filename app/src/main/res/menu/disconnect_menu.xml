@@ -20,4 +20,8 @@
         android:icon="@drawable/ic_account_off_black_24dp"
         android:title="@string/account"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/group"
+        android:icon="@drawable/ic_account_multiple_plus_black_24dp"
+        android:title="@string/group"
+        app:showAsAction="ifRoom" />
 </menu>

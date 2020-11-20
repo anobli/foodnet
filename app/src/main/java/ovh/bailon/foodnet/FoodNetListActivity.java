@@ -16,6 +16,7 @@
 package ovh.bailon.foodnet;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
@@ -76,7 +77,9 @@ public class FoodNetListActivity extends AppCompatActivity
         if (currentUser == null) {
             db = new FoodnetDBHelper(this);
         } else {
-            db = new FirestoreDBHelper(this);
+            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+            String group = sharedPreferences.getString("group", currentUser.getUid());
+            db = new FirestoreDBHelper(this, group);
         }
         db.registerOnDataChange(this);
         listView = findViewById(R.id.FoodNetList);
@@ -233,6 +236,10 @@ public class FoodNetListActivity extends AppCompatActivity
                             }
                         });
                 return true;
+            case R.id.group:
+                Intent intent = new Intent(this, InviteActivity.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -248,7 +255,9 @@ public class FoodNetListActivity extends AppCompatActivity
             if (resultCode == RESULT_OK) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 invalidateOptionsMenu();
-                db = new FirestoreDBHelper(this);
+                SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+                String group = sharedPreferences.getString("group", user.getUid());
+                db = new FirestoreDBHelper(this, group);
                 db.registerOnDataChange(this);
                 db.requestGetAll();
             }

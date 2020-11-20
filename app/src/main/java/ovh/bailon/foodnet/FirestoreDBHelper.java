@@ -60,10 +60,12 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private Locale locale;
     private FirebaseFirestore db;
     private OnDataEventListener listener;
+    private String group_id;
 
-    public FirestoreDBHelper(Context context) {
+    public FirestoreDBHelper(Context context, String group_id) {
         this.context = context;
         this.locale = Locale.getDefault();
+        this.group_id = group_id;
 
         db = FirebaseFirestore.getInstance();
     }
@@ -71,15 +73,11 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     public void add(OpenDating openDating) {
         Map<String, Object> food = new HashMap<>();
         food.put(COLUMN_ID, openDating.getID());
+        food.put(COLUMN_GROUP, group_id);
         food.put(COLUMN_FOOD, openDating.getFood());
         food.put(COLUMN_PROD_DATE, openDating.getProdDate());
         food.put(COLUMN_EXP_DATE, openDating.getExpDate());
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
-
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        Map<String, Object> members = new HashMap<>();
-        members.put(currentUser.getUid(), currentUser.getEmail());
-        food.put(GROUP_MEMBERS,Arrays.asList(currentUser.getUid()));
 
         db.collection("Foods").document(Long.toString(openDating.getID()))
                 .set(food)
@@ -99,7 +97,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     public void requestGet(long id) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
-                .whereArrayContains(GROUP_MEMBERS, currentUser.getUid())
+                .whereEqualTo(COLUMN_GROUP, group_id)
                 .whereEqualTo(COLUMN_ID, id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -126,7 +124,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     public void requestGetAll() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
-                .whereArrayContains(GROUP_MEMBERS, currentUser.getUid())
+                .whereEqualTo(COLUMN_GROUP, group_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -159,7 +157,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     public void delete(final OpenDating openDating) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
-                .whereArrayContains(GROUP_MEMBERS, currentUser.getUid())
+                .whereEqualTo(COLUMN_GROUP, group_id)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

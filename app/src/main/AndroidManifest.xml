@@ -13,9 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".InviteActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="group.foodnet.bailon.ovh"
+                    android:scheme="foodnet" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/mobileads_app_id"/>
+            android:value="@string/mobileads_app_id" />
 
         <activity android:name=".FoodNetListActivity">
             <intent-filter>

@@ -14,4 +14,6 @@
     <string name="notification_title">Your food is going to expire</string>
     <string name="notification_content">The food named %s is going to expire soon</string>
     <string name="account">Account</string>
+    <string name="group">Group</string>
+    <string name="textViewInviteTitle">Manage people that could see, add or remove food</string>
 </resources>
