@@ -15,23 +15,36 @@
 
 package ovh.bailon.foodnet;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
-public class InviteActivity extends AppCompatActivity implements OnGroupEventListener {
+public class InviteActivity extends AppCompatActivity implements OnGroupEventListener, View.OnClickListener {
 
     private FirestoreGroup db;
     private ListView listView;
@@ -81,5 +94,49 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
         members.clear();
         members.addAll(list);
         listViewAdapter.notifyDataSetChanged();
+    }
+
+    private Bitmap createQrCode() {
+        Random random = new Random();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+        String group = sharedPreferences.getString("group", currentUser.getUid());
+        String text = "foodnet://group.foodnet.bailon.ovh?group=" + group;
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+            return bitmap;
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private void showQrCode() {
+        Bitmap bitmap = createQrCode();
+        if (bitmap == null)
+            return;
+
+        AlertDialog.Builder alertadd = new AlertDialog.Builder(this);
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View view = factory.inflate(R.layout.dialog_qr_code, null);
+        ImageView imageView = (ImageView) view.findViewById(R.id.dialogQrCode);
+        imageView.setImageBitmap(bitmap);
+        alertadd.setView(view);
+        alertadd.setNeutralButton(getString(R.string.done), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dlg, int sumthin) {
+
+            }
+        });
+
+        alertadd.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        showQrCode();
     }
 }

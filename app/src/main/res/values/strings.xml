@@ -16,4 +16,5 @@
     <string name="account">Account</string>
     <string name="group">Group</string>
     <string name="textViewInviteTitle">Manage people that could see, add or remove food</string>
+    <string name="done">Done</string>
 </resources>
