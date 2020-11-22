@@ -177,6 +177,8 @@ public class FoodNetActivity extends AppCompatActivity
                     openingCalendar.get(Calendar.YEAR),
                     openingCalendar.get(Calendar.MONTH),
                     openingCalendar.get(Calendar.DAY_OF_MONTH)).show();
+        } else if (v.getId() == R.id.deleteButton) {
+            db.delete(openDating);
         }
     }
 
