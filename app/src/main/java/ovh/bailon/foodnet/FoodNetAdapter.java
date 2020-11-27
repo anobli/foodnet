@@ -65,8 +65,7 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme("foodnet")
                     .authority("foodnet.bailon.ovh")
-                    .appendQueryParameter("id", "" + openDating.getID())
-                    .appendQueryParameter("exit", "1");
+                    .appendQueryParameter("id", "" + openDating.getID());
 
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(builder.build());

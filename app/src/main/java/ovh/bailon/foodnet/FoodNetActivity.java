@@ -159,9 +159,7 @@ public class FoodNetActivity extends AppCompatActivity
             } else {
                 db.update(newOpenDating);
             }
-            if (saveExit != null && saveExit.compareTo("1") == 0) {
-                finish();
-            }
+            finish();
         } else if (v.getId() == R.id.editTextProdDate) {
             new DatePickerDialog(this, prodCalendarListener,
                     prodCalendar.get(Calendar.YEAR),
@@ -179,6 +177,7 @@ public class FoodNetActivity extends AppCompatActivity
                     openingCalendar.get(Calendar.DAY_OF_MONTH)).show();
         } else if (v.getId() == R.id.deleteButton) {
             db.delete(openDating);
+            finish();
         }
     }
 
