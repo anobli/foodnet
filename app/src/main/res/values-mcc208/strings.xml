@@ -33,4 +33,5 @@
     <string name="group">Groupe</string>
     <string name="textViewInviteTitle">Gerer les personnes pouvant voir, ajouter ou supprimer de la nouriture</string>
     <string name="done">Terminé</string>
+    <string name="camera_permission_denied">L\'accès à la caméra n\'a pas été autorisé. Vous ne pourrez pas scanner de QR codes!</string>
 </resources>

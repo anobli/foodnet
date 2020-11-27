@@ -17,4 +17,5 @@
     <string name="group">Group</string>
     <string name="textViewInviteTitle">Manage people that could see, add or remove food</string>
     <string name="done">Done</string>
+    <string name="camera_permission_denied">Camera permission has been denied. You won\'t be able to scan QR codes!</string>
 </resources>

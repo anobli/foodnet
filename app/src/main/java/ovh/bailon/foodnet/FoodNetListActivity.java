@@ -15,20 +15,30 @@
 
 package ovh.bailon.foodnet;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.print.PrintHelper;
 
 import com.firebase.ui.auth.AuthUI;
@@ -61,6 +71,8 @@ public class FoodNetListActivity extends AppCompatActivity
     private ArrayAdapter<OpenDating> listViewAdapter;
     private ListView listView;
     private static final int RC_SIGN_IN = 123;
+    private static final int QR_CODE_RESULT = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +97,24 @@ public class FoodNetListActivity extends AppCompatActivity
         listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
         this.listView.setAdapter(this.listViewAdapter);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityResultLauncher<String> request = registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+                        @Override
+                        public void onActivityResult(Boolean isGranted) {
+                            if (!isGranted) {
+                                Toast toast = Toast.makeText(FoodNetListActivity.this, R.string.camera_permission_denied, Toast.LENGTH_LONG);
+                                toast.show();
+
+                                ImageButton qr_scan_btn = (ImageButton) findViewById(R.id.scan_qr);
+                                qr_scan_btn.setEnabled(false);
+                                qr_scan_btn.setVisibility(ImageButton.INVISIBLE);
+                            }
+                        }
+                    });
+            request.launch(Manifest.permission.CAMERA);
+        }
 
         AdView adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -170,10 +200,18 @@ public class FoodNetListActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        Bitmap sheet = createQrCodeSheet(4, 6);
-        PrintHelper photoPrinter = new PrintHelper(this);
-        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-        photoPrinter.printBitmap("QR code", sheet);
+        switch (v.getId()) {
+            case R.id.print_qr:
+                Bitmap sheet = createQrCodeSheet(4, 6);
+                PrintHelper photoPrinter = new PrintHelper(this);
+                photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+                photoPrinter.printBitmap("QR code", sheet);
+                break;
+            case R.id.scan_qr:
+                Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
+                startActivityForResult(intent, QR_CODE_RESULT);
+                break;
+        }
     }
 
     @Override
@@ -260,6 +298,11 @@ public class FoodNetListActivity extends AppCompatActivity
                 db = new FirestoreDBHelper(this, group);
                 db.registerOnDataChange(this);
                 db.requestGetAll();
+            }
+        } else if (requestCode == QR_CODE_RESULT) {
+            if (resultCode == 0 && data.hasExtra("url")) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getStringExtra("url")));
+                startActivity(intent);
             }
         }
     }
