@@ -15,10 +15,10 @@
 
 package ovh.bailon.foodnet;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,11 +42,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 public class InviteActivity extends AppCompatActivity implements OnGroupEventListener, View.OnClickListener {
 
+    private static final int QR_CODE_RESULT = 0;
     private FirestoreGroup db;
     private ListView listView;
     private ArrayAdapter<String> listViewAdapter;
@@ -137,6 +138,30 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
 
     @Override
     public void onClick(View v) {
-        showQrCode();
+        if (v.getId() == R.id.inviteButton) {
+            showQrCode();
+        } else if (v.getId() == R.id.invite_scan_qr) {
+            Intent intent = new Intent(this, QrCodeScanActivity.class);
+            startActivityForResult(intent, QR_CODE_RESULT);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == QR_CODE_RESULT) {
+            if (resultCode == 0 && data.hasExtra("url")) {
+                String url = data.getStringExtra("url");
+
+                if (url.contains("group")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getStringExtra("url")));
+                    startActivity(intent);
+                } else {
+                    Toast toast = Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        }
     }
 }
