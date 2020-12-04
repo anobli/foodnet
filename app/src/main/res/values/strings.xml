@@ -19,4 +19,7 @@
     <string name="done">Done</string>
     <string name="camera_permission_denied">Camera permission has been denied. You won\'t be able to scan QR codes!</string>
     <string name="invalid_qr_code">The scanned QR code is not valid.</string>
+    <string name="freezer">Freezer</string>
+    <string name="fridge">Fridge</string>
+    <string name="cupboard">Cupboard</string>
 </resources>

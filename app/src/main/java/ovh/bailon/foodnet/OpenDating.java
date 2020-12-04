@@ -29,6 +29,7 @@ public class OpenDating {
     private Date prodDate;
     private Date expDate;
     private Date openingDate;
+    private int location;
 
     private DateFormat df;
 
@@ -44,9 +45,10 @@ public class OpenDating {
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
     public OpenDating(long id, String food, String prodDate, String expDate,
-                      String openingDate, Locale locale) {
+                      String openingDate, int location, Locale locale) {
         this.id = id;
         this.food = food;
+        this.location = location;
 
         if (food == null) {
             throw new NullPointerException();
@@ -77,8 +79,8 @@ public class OpenDating {
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
     public OpenDating(long id, String food, String prodDate, String expDate,
-                      String openingDate) {
-        this(id, food, prodDate, expDate, openingDate, Locale.getDefault());
+                      String openingDate, int location) {
+        this(id, food, prodDate, expDate, openingDate, location, Locale.getDefault());
     }
 
     /**
@@ -209,5 +211,9 @@ public class OpenDating {
 
         FoodNetNotification.cancelNotification(context, food);
         FoodNetNotification.cancelNotification(context, food);
+    }
+
+    public int getLocation() {
+        return location;
     }
 }

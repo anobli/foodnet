@@ -35,4 +35,7 @@
     <string name="done">Terminé</string>
     <string name="camera_permission_denied">L\'accès à la caméra n\'a pas été autorisé. Vous ne pourrez pas scanner de QR codes!</string>
     <string name="invalid_qr_code">Le QR code scanné n\'est pas valide.</string>
+    <string name="freezer">Congélateur</string>
+    <string name="fridge">Frigo</string>
+    <string name="cupboard">Placard</string>
 </resources>

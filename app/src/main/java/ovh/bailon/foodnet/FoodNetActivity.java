@@ -22,9 +22,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.ads.AdRequest;
@@ -46,6 +49,7 @@ public class FoodNetActivity extends AppCompatActivity
     private EditText editTextProdDate;
     private EditText editTextExpDate;
     private EditText editTextOpeningDate;
+    private Spinner locationSpinner;
     private IFoodnetDBHelper db;
     private String id = null;
     private String saveExit = null;
@@ -82,6 +86,8 @@ public class FoodNetActivity extends AppCompatActivity
         editTextProdDate = findViewById(R.id.editTextProdDate);
         editTextExpDate = findViewById(R.id.editTextExpDate);
         editTextOpeningDate = findViewById(R.id.editTextOpeningDate);
+        locationSpinner = findViewById(R.id.spinnerLocation);
+        locationSpinner.setAdapter(new LocationAdapter(this));
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -152,7 +158,8 @@ public class FoodNetActivity extends AppCompatActivity
                     editTextFood.getText().toString(),
                     editTextProdDate.getText().toString(),
                     editTextExpDate.getText().toString(),
-                    editTextOpeningDate.getText().toString());
+                    editTextOpeningDate.getText().toString(),
+                    (int)locationSpinner.getSelectedItemId());
             if (openDating == null) {
                 newOpenDating.scheduleNotifications(this);
                 db.add(newOpenDating);
@@ -193,6 +200,12 @@ public class FoodNetActivity extends AppCompatActivity
             editTextProdDate.setText(openDating.getProdDate());
             editTextExpDate.setText(openDating.getExpDate());
             editTextOpeningDate.setText(openDating.getOpeningDate());
+            for(int i=0; i < locationSpinner.getAdapter().getCount(); i++) {
+                if(locationSpinner.getAdapter().getItemId(i) == openDating.getLocation()){
+                    locationSpinner.setSelection(i);
+                    break;
+                }
+            };
             this.openDating = openDating;
         }
     }

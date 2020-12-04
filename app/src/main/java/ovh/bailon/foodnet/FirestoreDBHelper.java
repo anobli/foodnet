@@ -38,6 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+
+import static ovh.bailon.foodnet.LocationAdapter.UNKNOWN_LOCATION;
 
 public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
@@ -52,6 +55,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String COLUMN_PROD_DATE = "ProdDate";
     private static final String COLUMN_EXP_DATE = "ExpDate";
     private static final String COLUMN_OPENING_DATE = "OpeningDate";
+    private static final String COLUMN_LOCATION = "Location";
 
     private static final String GROUP_OWNER = "Owner";
     private static final String GROUP_MEMBERS = "Members";
@@ -78,6 +82,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_PROD_DATE, openDating.getProdDate());
         food.put(COLUMN_EXP_DATE, openDating.getExpDate());
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
+        food.put(COLUMN_LOCATION, Integer.toString(openDating.getLocation()));
 
         db.collection("Foods").document(Long.toString(openDating.getID()))
                 .set(food)
@@ -106,12 +111,17 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
+                                int location = UNKNOWN_LOCATION;
+                                if (food.containsKey(COLUMN_LOCATION))
+                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
+
                                 OpenDating openDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
                                         (String) food.get(COLUMN_FOOD),
                                         (String) food.get(COLUMN_PROD_DATE),
                                         (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE));
+                                        (String) food.get(COLUMN_OPENING_DATE),
+                                        location);
                                 listener.onGetReady(openDating);
                             }
                         } else {
@@ -133,12 +143,17 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                             ArrayList<OpenDating> list = new ArrayList<OpenDating>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
+                                int location = UNKNOWN_LOCATION;
+                                if (food.containsKey(COLUMN_LOCATION))
+                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
+
                                 OpenDating openDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
                                         (String) food.get(COLUMN_FOOD),
                                         (String) food.get(COLUMN_PROD_DATE),
                                         (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE));
+                                        (String) food.get(COLUMN_OPENING_DATE),
+                                        location);
                                 list.add(openDating);
                             }
                             listener.onGetAllReady(list);
@@ -171,12 +186,16 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                                     continue;
                                 }
 
+                                int location = UNKNOWN_LOCATION;
+                                if (food.containsKey(COLUMN_LOCATION))
+                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
                                 OpenDating newOpenDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
                                         (String) food.get(COLUMN_FOOD),
                                         (String) food.get(COLUMN_PROD_DATE),
                                         (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE));
+                                        (String) food.get(COLUMN_OPENING_DATE),
+                                        location);
                                 list.add(newOpenDating);
                             }
                             listener.onGetAllReady(list);

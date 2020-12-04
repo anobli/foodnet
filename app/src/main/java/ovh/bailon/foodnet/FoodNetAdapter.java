@@ -23,10 +23,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
+
+import static ovh.bailon.foodnet.LocationAdapter.CUPBOARD_ID;
+import static ovh.bailon.foodnet.LocationAdapter.FREEZER_ID;
+import static ovh.bailon.foodnet.LocationAdapter.FRIDGE_ID;
 
 public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
     private IFoodnetDBHelper db;
@@ -51,10 +56,22 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
 
         TextView name = (TextView) convertView.findViewById(R.id.food);
         TextView date = (TextView) convertView.findViewById(R.id.date);
+        ImageView icon = (ImageView) convertView.findViewById(R.id.locationIcon);
         ConstraintLayout layout = (ConstraintLayout) convertView.findViewById(R.id.layout);
 
         name.setText(openDating.getFood());
         date.setText(openDating.getExpDate());
+        switch (openDating.getLocation()) {
+            case FREEZER_ID:
+                icon.setImageResource(R.drawable.ic_snowflake_black_24dp);
+                break;
+            case FRIDGE_ID:
+                icon.setImageResource(R.drawable.ic_fridge_black_24dp);
+                break;
+            case CUPBOARD_ID:
+                icon.setImageResource(R.drawable.ic_cupboard_black_24dp);
+                break;
+        }
 
         layout.setTag(position);
         layout.setOnClickListener(new View.OnClickListener() {

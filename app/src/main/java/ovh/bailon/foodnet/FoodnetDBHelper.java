@@ -28,7 +28,7 @@ import java.util.Locale;
 public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "FoodNet";
     private static final String TABLE_NOTE = "OpenDating";
 
@@ -37,6 +37,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
     private static final String COLUMN_PROD_DATE = "ProdDate";
     private static final String COLUMN_EXP_DATE = "ExpDate";
     private static final String COLUMN_OPENING_DATE = "OpeningDate";
+    private static final String COLUMN_LOCATION = "Location";
 
     private Context context;
     private Locale locale;
@@ -59,13 +60,15 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         String script = "CREATE TABLE " + TABLE_NOTE + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_FOOD + " TEXT,"
                 + COLUMN_PROD_DATE + " TEXT," + COLUMN_EXP_DATE + " TEXT,"
-                + COLUMN_OPENING_DATE + " TEXT" + ")";
+                + COLUMN_OPENING_DATE + " TEXT," + COLUMN_LOCATION + " INTEGER" + ")";
         db.execSQL(script);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        if (newVersion == 2 && oldVersion == 1) {
+            db.execSQL("ALTER TABLE " + DATABASE_NAME + " ADD COLUMN " + COLUMN_LOCATION + " INTEGER DEFAULT 0");
+        }
     }
 
     public void add(OpenDating openDating) {
@@ -110,7 +113,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
                     Integer.parseInt(cursor.getString(0)),
                     cursor.getString(1), cursor.getString(2),
                     cursor.getString(3), cursor.getString(4),
-                    locale);
+                    cursor.getInt(5), locale);
 
             cursor.close();
             return openingDate;
@@ -145,7 +148,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
                         Integer.parseInt(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2),
                         cursor.getString(3), cursor.getString(4),
-                        locale);
+                        cursor.getInt(5), locale);
                 noteList.add(openingDate);
             } while (cursor.moveToNext());
         }
