@@ -29,7 +29,7 @@ public class OpenDating {
     private Date prodDate;
     private Date expDate;
     private Date openingDate;
-    private int location;
+    private String location;
 
     private DateFormat df;
 
@@ -45,7 +45,7 @@ public class OpenDating {
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
     public OpenDating(long id, String food, String prodDate, String expDate,
-                      String openingDate, int location, Locale locale) {
+                      String openingDate, String location, Locale locale) {
         this.id = id;
         this.food = food;
         this.location = location;
@@ -79,8 +79,24 @@ public class OpenDating {
      * @throws IllegalArgumentException if food is empty or date are not valid
      */
     public OpenDating(long id, String food, String prodDate, String expDate,
-                      String openingDate, int location) {
+                      String openingDate, String location) {
         this(id, food, prodDate, expDate, openingDate, location, Locale.getDefault());
+    }
+
+    /**
+     * Create an OpenDating object.
+     * @param id The id of the OpenDating
+     * @param food The name of the food
+     * @param prodDate The production date of the food
+     * @param expDate The expiration of the food
+     * @param openingDate The opening date
+     * @throws NullPointerException if food is null
+     * @throws IllegalArgumentException if food is empty or date are not valid
+     */
+    public OpenDating(long id, String food, String prodDate, String expDate,
+                      String openingDate, long location) {
+        this(id, food, prodDate, expDate, openingDate, Long.toString(location),
+                Locale.getDefault());
     }
 
     /**
@@ -213,7 +229,11 @@ public class OpenDating {
         FoodNetNotification.cancelNotification(context, food);
     }
 
-    public int getLocation() {
+    public String getLocation() {
         return location;
+    }
+
+    public long getLocationLong() {
+        return Long.parseLong(location);
     }
 }

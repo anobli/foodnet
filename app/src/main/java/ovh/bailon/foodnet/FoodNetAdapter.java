@@ -61,7 +61,7 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
 
         name.setText(openDating.getFood());
         date.setText(openDating.getExpDate());
-        switch (openDating.getLocation()) {
+        switch ((int)openDating.getLocationLong()) {
             case FREEZER_ID:
                 icon.setImageResource(R.drawable.ic_snowflake_black_24dp);
                 break;

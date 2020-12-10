@@ -82,7 +82,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_PROD_DATE, openDating.getProdDate());
         food.put(COLUMN_EXP_DATE, openDating.getExpDate());
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
-        food.put(COLUMN_LOCATION, Integer.toString(openDating.getLocation()));
+        food.put(COLUMN_LOCATION, openDating.getLocation());
 
         db.collection("Foods").document(Long.toString(openDating.getID()))
                 .set(food)
@@ -111,9 +111,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
-                                int location = UNKNOWN_LOCATION;
+                                String location = Integer.toString(UNKNOWN_LOCATION);
                                 if (food.containsKey(COLUMN_LOCATION))
-                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
+                                    location = (String) food.get(COLUMN_LOCATION);
 
                                 OpenDating openDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
@@ -143,9 +143,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                             ArrayList<OpenDating> list = new ArrayList<OpenDating>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
-                                int location = UNKNOWN_LOCATION;
+                                String location = Integer.toString(UNKNOWN_LOCATION);
                                 if (food.containsKey(COLUMN_LOCATION))
-                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
+                                    location = (String) food.get(COLUMN_LOCATION);
 
                                 OpenDating openDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
@@ -186,9 +186,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                                     continue;
                                 }
 
-                                int location = UNKNOWN_LOCATION;
+                                String location = Integer.toString(UNKNOWN_LOCATION);
                                 if (food.containsKey(COLUMN_LOCATION))
-                                    location = Integer.parseInt((String) food.get(COLUMN_LOCATION));
+                                    location = (String) food.get(COLUMN_LOCATION);
                                 OpenDating newOpenDating = new OpenDating(
                                         (long)food.get(COLUMN_ID),
                                         (String) food.get(COLUMN_FOOD),

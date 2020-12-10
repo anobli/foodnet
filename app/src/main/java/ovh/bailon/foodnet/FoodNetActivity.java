@@ -201,7 +201,7 @@ public class FoodNetActivity extends AppCompatActivity
             editTextExpDate.setText(openDating.getExpDate());
             editTextOpeningDate.setText(openDating.getOpeningDate());
             for(int i=0; i < locationSpinner.getAdapter().getCount(); i++) {
-                if(locationSpinner.getAdapter().getItemId(i) == openDating.getLocation()){
+                if(locationSpinner.getAdapter().getItemId(i) == openDating.getLocationLong()) {
                     locationSpinner.setSelection(i);
                     break;
                 }

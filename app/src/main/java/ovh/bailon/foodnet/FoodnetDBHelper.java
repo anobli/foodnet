@@ -25,6 +25,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static ovh.bailon.foodnet.LocationAdapter.UNKNOWN_LOCATION;
+
 public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
 
@@ -43,6 +45,9 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
     private Locale locale;
     private OnDataEventListener listener;
 
+    private static final String DATABASE_UPDATE_V2 = "ALTER TABLE "
+            + TABLE_NOTE + " ADD COLUMN " + COLUMN_LOCATION + " TEXT;";
+
     public FoodnetDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
@@ -60,14 +65,14 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         String script = "CREATE TABLE " + TABLE_NOTE + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_FOOD + " TEXT,"
                 + COLUMN_PROD_DATE + " TEXT," + COLUMN_EXP_DATE + " TEXT,"
-                + COLUMN_OPENING_DATE + " TEXT," + COLUMN_LOCATION + " INTEGER" + ")";
+                + COLUMN_OPENING_DATE + " TEXT," + COLUMN_LOCATION + " TEXT" + ")";
         db.execSQL(script);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (newVersion == 2 && oldVersion == 1) {
-            db.execSQL("ALTER TABLE " + DATABASE_NAME + " ADD COLUMN " + COLUMN_LOCATION + " INTEGER DEFAULT 0");
+        if (oldVersion < 2) {
+            db.execSQL(DATABASE_UPDATE_V2);
         }
     }
 
@@ -79,6 +84,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         values.put(COLUMN_PROD_DATE, openDating.getProdDate());
         values.put(COLUMN_EXP_DATE, openDating.getExpDate());
         values.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
+        values.put(COLUMN_LOCATION, openDating.getLocation());
 
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_NOTE, null, values);
@@ -109,12 +115,19 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         }
 
         try {
-            OpenDating openingDate = new OpenDating(
-                    Integer.parseInt(cursor.getString(0)),
-                    cursor.getString(1), cursor.getString(2),
-                    cursor.getString(3), cursor.getString(4),
-                    cursor.getInt(5), locale);
+            OpenDating openingDate;
+            String food = cursor.getString(1);
+            String prodDate = cursor.getString(2);
+            String expDate = cursor.getString(3);
+            String openingpDate = cursor.getString(4);
+            String location;
 
+            if (cursor.getColumnCount() >= 6) {
+                location = cursor.getString(5);
+            } else {
+                location = Integer.toString(UNKNOWN_LOCATION);
+            }
+            openingDate = new OpenDating(id, food, prodDate, expDate, openingpDate, location);
             cursor.close();
             return openingDate;
         } catch (android.database.CursorIndexOutOfBoundsException ex) {
@@ -148,7 +161,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
                         Integer.parseInt(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2),
                         cursor.getString(3), cursor.getString(4),
-                        cursor.getInt(5), locale);
+                        cursor.getString(5), locale);
                 noteList.add(openingDate);
             } while (cursor.moveToNext());
         }
@@ -167,6 +180,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         values.put(COLUMN_PROD_DATE, openDating.getProdDate());
         values.put(COLUMN_EXP_DATE, openDating.getExpDate());
         values.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
+        values.put(COLUMN_LOCATION, openDating.getLocation());
 
         SQLiteDatabase db = this.getWritableDatabase();
         int ret = db.update(TABLE_NOTE, values, COLUMN_ID + " = ?",
