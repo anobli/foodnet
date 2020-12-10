@@ -25,6 +25,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
+import ovh.bailon.foodnet.db.FirestoreDBHelper;
+import ovh.bailon.foodnet.db.FoodnetDBHelper;
+import ovh.bailon.foodnet.db.IFoodnetDBHelper;
+
 public class FoodNetBootReceiver extends BroadcastReceiver implements OnDataEventListener {
     private Context context;
 

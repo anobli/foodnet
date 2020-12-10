@@ -42,15 +42,16 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
+import ovh.bailon.foodnet.db.FirestoreGroup;
+import ovh.bailon.foodnet.utils.QrCodeScanActivity;
 
 public class InviteActivity extends AppCompatActivity implements OnGroupEventListener, View.OnClickListener {
 
     private static final int QR_CODE_RESULT = 0;
     private FirestoreGroup db;
-    private ListView listView;
     private ArrayAdapter<String> listViewAdapter;
-    private final ArrayList<String> members = new ArrayList<String>();
+    private final ArrayList<String> members = new ArrayList<>();
     FirebaseUser currentUser;
 
     @Override
@@ -60,7 +61,7 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
 
         db = new FirestoreGroup();
         db.registerOnGroupChange(this);
-        listView = findViewById(R.id.listViewGroup);
+        ListView listView = findViewById(R.id.listViewGroup);
         listViewAdapter = new GroupAdapter(this, members, db);
         listView.setAdapter(this.listViewAdapter);
 
@@ -83,7 +84,7 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
 
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("group", group);
-            editor.commit();
+            editor.apply();
         } else {
             String group = sharedPreferences.getString("group", currentUser.getUid());
             db.requestGetAll(group);
@@ -98,7 +99,6 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
     }
 
     private Bitmap createQrCode() {
-        Random random = new Random();
 
         SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
         String group = sharedPreferences.getString("group", currentUser.getUid());
@@ -107,8 +107,7 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            return bitmap;
+            return barcodeEncoder.createBitmap(bitMatrix);
         } catch (WriterException e) {
             e.printStackTrace();
         }

@@ -13,33 +13,24 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ovh.bailon.foodnet;
+package ovh.bailon.foodnet.utils;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
 
+import ovh.bailon.foodnet.R;
+
 public class QrCodeScanActivity extends AppCompatActivity {
     private CodeScanner mCodeScanner;
-
-    private void createScanner() {
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

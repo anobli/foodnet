@@ -15,18 +15,15 @@
 
 package ovh.bailon.foodnet;
 
-import android.app.DatePickerDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,23 +37,23 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
+
+import ovh.bailon.foodnet.db.FirestoreDBHelper;
+import ovh.bailon.foodnet.db.FoodnetDBHelper;
+import ovh.bailon.foodnet.db.IFoodnetDBHelper;
+import ovh.bailon.foodnet.ui.ArrayItems;
+import ovh.bailon.foodnet.ui.ListItemAdapter;
+import ovh.bailon.foodnet.ui.ListItemBase;
+import ovh.bailon.foodnet.ui.ListItemDate;
+import ovh.bailon.foodnet.ui.ListItemSpinner;
+import ovh.bailon.foodnet.ui.ListItemTextValue;
 
 public class FoodNetActivity extends AppCompatActivity
         implements View.OnClickListener, OnDataEventListener {
     private OpenDating openDating = null;
-    private EditText editTextFood;
-    private EditText editTextProdDate;
-    private EditText editTextExpDate;
-    private EditText editTextOpeningDate;
-    private Spinner locationSpinner;
     private IFoodnetDBHelper db;
     private String id = null;
-    private String saveExit = null;
-
-    final Calendar prodCalendar = Calendar.getInstance();
-    final Calendar expCalendar = Calendar.getInstance();
-    final Calendar openingCalendar = Calendar.getInstance();
+    private ArrayItems items;
 
     DateFormat df;
 
@@ -82,19 +79,21 @@ public class FoodNetActivity extends AppCompatActivity
         db.registerOnDataChange(this);
         df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 
-        editTextFood = findViewById(R.id.editTextFood);
-        editTextProdDate = findViewById(R.id.editTextProdDate);
-        editTextExpDate = findViewById(R.id.editTextExpDate);
-        editTextOpeningDate = findViewById(R.id.editTextOpeningDate);
-        locationSpinner = findViewById(R.id.spinnerLocation);
-        locationSpinner.setAdapter(new LocationAdapter(this));
+        items = new ArrayItems();
+        items.add("Food", new ListItemTextValue(this, R.layout.item_content_simple_text, R.string.food));
+        items.add("ProdDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.prodDate));
+        items.add("ExpDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.expDate));
+        items.add("OpeningDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.openingDate));
+        items.add("Location", new ListItemSpinner(this, new LocationAdapter(this)));
+        ArrayAdapter<ListItemBase> listViewAdapter = new ListItemAdapter(this, items.getUiList());
+        listViewAdapter.notifyDataSetChanged();
+        ListView listView = findViewById(R.id.testListView);
+        listView.setAdapter(listViewAdapter);
 
         Intent intent = getIntent();
-        String action = intent.getAction();
         Uri data = intent.getData();
         if (data != null) {
             id = data.getQueryParameter("id");
-            saveExit = data.getQueryParameter("exit");
             db.requestGet(Long.parseLong(id));
         }
 
@@ -110,56 +109,11 @@ public class FoodNetActivity extends AppCompatActivity
                 PackageManager.DONT_KILL_APP);
     }
 
-    private void updateLabel(EditText v, Calendar calendar,
-                             int year, int monthOfYear, int dayOfMonth) {
-
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, monthOfYear);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        v.setText(df.format(calendar.getTime()));
-    }
-
-    DatePickerDialog.OnDateSetListener prodCalendarListener = 
-            new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            updateLabel(editTextProdDate, prodCalendar, year, monthOfYear,
-                    dayOfMonth);
-        }
-    };
-
-    DatePickerDialog.OnDateSetListener expCalendarListener =
-            new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            updateLabel(editTextExpDate, expCalendar, year, monthOfYear,
-                    dayOfMonth);
-        }
-    };
-
-    DatePickerDialog.OnDateSetListener openingCalendarListener =
-            new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear,
-                              int dayOfMonth) {
-            updateLabel(editTextOpeningDate, openingCalendar, year, monthOfYear,
-                    dayOfMonth);
-        }
-    };
-
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.saveButton) {
-            OpenDating newOpenDating = new OpenDating(
-                    Integer.parseInt(id),
-                    editTextFood.getText().toString(),
-                    editTextProdDate.getText().toString(),
-                    editTextExpDate.getText().toString(),
-                    editTextOpeningDate.getText().toString(),
-                    (int)locationSpinner.getSelectedItemId());
+            OpenDating newOpenDating = new OpenDating(items.getHashMap());
+            newOpenDating.setId(id);
             if (openDating == null) {
                 newOpenDating.scheduleNotifications(this);
                 db.add(newOpenDating);
@@ -167,21 +121,6 @@ public class FoodNetActivity extends AppCompatActivity
                 db.update(newOpenDating);
             }
             finish();
-        } else if (v.getId() == R.id.editTextProdDate) {
-            new DatePickerDialog(this, prodCalendarListener,
-                    prodCalendar.get(Calendar.YEAR),
-                    prodCalendar.get(Calendar.MONTH),
-                    prodCalendar.get(Calendar.DAY_OF_MONTH)).show();
-        } else if (v.getId() == R.id.editTextExpDate) {
-            new DatePickerDialog(this, expCalendarListener,
-                    expCalendar.get(Calendar.YEAR),
-                    expCalendar.get(Calendar.MONTH),
-                    expCalendar.get(Calendar.DAY_OF_MONTH)).show();
-        } else if (v.getId() == R.id.editTextOpeningDate) {
-            new DatePickerDialog(this, openingCalendarListener,
-                    openingCalendar.get(Calendar.YEAR),
-                    openingCalendar.get(Calendar.MONTH),
-                    openingCalendar.get(Calendar.DAY_OF_MONTH)).show();
         } else if (v.getId() == R.id.deleteButton) {
             db.delete(openDating);
             finish();
@@ -196,17 +135,7 @@ public class FoodNetActivity extends AppCompatActivity
     @Override
     public void onGetReady(OpenDating openDating) {
         if (openDating != null) {
-            editTextFood.setText(openDating.getFood());
-            editTextProdDate.setText(openDating.getProdDate());
-            editTextExpDate.setText(openDating.getExpDate());
-            editTextOpeningDate.setText(openDating.getOpeningDate());
-            for(int i=0; i < locationSpinner.getAdapter().getCount(); i++) {
-                Log.d("DTC", "" + locationSpinner.getAdapter().getItemId(i) + "==" + openDating.getLocationLong());
-                if(locationSpinner.getAdapter().getItemId(i) == openDating.getLocationLong()) {
-                    locationSpinner.setSelection(i);
-                    break;
-                }
-            };
+            items.updateUi(openDating.getHashMap());
             this.openDating = openDating;
         }
     }

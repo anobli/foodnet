@@ -23,25 +23,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
 
-import static ovh.bailon.foodnet.LocationAdapter.CUPBOARD_ID;
-import static ovh.bailon.foodnet.LocationAdapter.FREEZER_ID;
-import static ovh.bailon.foodnet.LocationAdapter.FRIDGE_ID;
+import ovh.bailon.foodnet.db.IFoodnetDBHelper;
 
 public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
     private IFoodnetDBHelper db;
     private Context context;
-    private ArrayList<OpenDating> list;
 
     public FoodNetAdapter(Context context, ArrayList<OpenDating> list, IFoodnetDBHelper db) {
         super(context, 0, list);
         this.context = context;
-        this.list = list;
         this.db = db;
     }
 

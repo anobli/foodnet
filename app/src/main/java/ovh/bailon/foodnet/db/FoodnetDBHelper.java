@@ -13,7 +13,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ovh.bailon.foodnet;
+package ovh.bailon.foodnet.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,7 +25,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static ovh.bailon.foodnet.LocationAdapter.UNKNOWN_LOCATION;
+import ovh.bailon.foodnet.OnDataEventListener;
+import ovh.bailon.foodnet.OpenDating;
 
 public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";

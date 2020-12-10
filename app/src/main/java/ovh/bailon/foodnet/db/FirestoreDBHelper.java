@@ -13,11 +13,10 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ovh.bailon.foodnet;
+package ovh.bailon.foodnet.db;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 
@@ -25,44 +24,29 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
-import static ovh.bailon.foodnet.LocationAdapter.UNKNOWN_LOCATION;
+import ovh.bailon.foodnet.OnDataEventListener;
+import ovh.bailon.foodnet.OpenDating;
 
 public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
 
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "FoodNet";
-    private static final String TABLE_NOTE = "OpenDating";
-
-    private static final String COLUMN_ID = "Id";
+    private static final String COLUMN_ID = OpenDating.ID;
     private static final String COLUMN_GROUP = "Group";
-    private static final String COLUMN_FOOD = "Food";
-    private static final String COLUMN_PROD_DATE = "ProdDate";
-    private static final String COLUMN_EXP_DATE = "ExpDate";
-    private static final String COLUMN_OPENING_DATE = "OpeningDate";
-    private static final String COLUMN_LOCATION = "Location";
+    private static final String COLUMN_FOOD = OpenDating.FOOD;
+    private static final String COLUMN_PROD_DATE = OpenDating.PROD_DATE;
+    private static final String COLUMN_EXP_DATE = OpenDating.EXP_DATE;
+    private static final String COLUMN_OPENING_DATE = OpenDating.OPENING_DATE;
+    private static final String COLUMN_LOCATION = OpenDating.LOCATION;
 
-    private static final String GROUP_OWNER = "Owner";
-    private static final String GROUP_MEMBERS = "Members";
-
-    private Context context;
-    private Locale locale;
     private FirebaseFirestore db;
     private OnDataEventListener listener;
     private String group_id;
@@ -71,8 +55,6 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private int lastRequestedLocatation;
 
     public FirestoreDBHelper(Context context, String group_id) {
-        this.context = context;
-        this.locale = Locale.getDefault();
         this.group_id = group_id;
 
         db = FirebaseFirestore.getInstance();
@@ -104,7 +86,6 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     }
 
     public void requestGet(long id) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
                 .whereEqualTo(COLUMN_GROUP, group_id)
                 .whereEqualTo(COLUMN_ID, id)
@@ -115,17 +96,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
-                                String location = Integer.toString(UNKNOWN_LOCATION);
-                                if (food.containsKey(COLUMN_LOCATION))
-                                    location = (String) food.get(COLUMN_LOCATION);
-
-                                OpenDating openDating = new OpenDating(
-                                        (long)food.get(COLUMN_ID),
-                                        (String) food.get(COLUMN_FOOD),
-                                        (String) food.get(COLUMN_PROD_DATE),
-                                        (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE),
-                                        location);
+                                OpenDating openDating = new OpenDating(food);
                                 listener.onGetReady(openDating);
                             }
                         } else {
@@ -137,7 +108,6 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
 
     public void requestGetAll() {
         lastRequestedLocatation = 0;
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
                 .whereEqualTo(COLUMN_GROUP, group_id)
                 .get()
@@ -148,17 +118,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                             ArrayList<OpenDating> list = new ArrayList<OpenDating>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
-                                String location = Integer.toString(UNKNOWN_LOCATION);
-                                if (food.containsKey(COLUMN_LOCATION))
-                                    location = (String) food.get(COLUMN_LOCATION);
-
-                                OpenDating openDating = new OpenDating(
-                                        (long)food.get(COLUMN_ID),
-                                        (String) food.get(COLUMN_FOOD),
-                                        (String) food.get(COLUMN_PROD_DATE),
-                                        (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE),
-                                        location);
+                                OpenDating openDating = new OpenDating(food);
                                 list.add(openDating);
                             }
                             listener.onGetAllReady(list);
@@ -171,7 +131,6 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
 
     public void requestGetAll(int location) {
         lastRequestedLocatation = location;
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
                 .whereEqualTo(COLUMN_GROUP, group_id)
                 .whereEqualTo(COLUMN_LOCATION, Long.toString(location))
@@ -183,17 +142,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                             ArrayList<OpenDating> list = new ArrayList<OpenDating>();
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> food = document.getData();
-                                String location = Integer.toString(UNKNOWN_LOCATION);
-                                if (food.containsKey(COLUMN_LOCATION))
-                                    location = (String) food.get(COLUMN_LOCATION);
-
-                                OpenDating openDating = new OpenDating(
-                                        (long)food.get(COLUMN_ID),
-                                        (String) food.get(COLUMN_FOOD),
-                                        (String) food.get(COLUMN_PROD_DATE),
-                                        (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE),
-                                        location);
+                                OpenDating openDating = new OpenDating(food);
                                 list.add(openDating);
                             }
                             listener.onGetAllReady(list);
@@ -210,7 +159,6 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     }
 
     public void delete(final OpenDating openDating) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         Query query = db.collection("Foods")
                 .whereEqualTo(COLUMN_GROUP, group_id);
         if (lastRequestedLocatation != 0)
@@ -226,17 +174,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                                     db.collection("Foods").document(document.getId()).delete();
                                     continue;
                                 }
-
-                                String location = Integer.toString(UNKNOWN_LOCATION);
-                                if (food.containsKey(COLUMN_LOCATION))
-                                    location = (String) food.get(COLUMN_LOCATION);
-                                OpenDating newOpenDating = new OpenDating(
-                                        (long)food.get(COLUMN_ID),
-                                        (String) food.get(COLUMN_FOOD),
-                                        (String) food.get(COLUMN_PROD_DATE),
-                                        (String) food.get(COLUMN_EXP_DATE),
-                                        (String) food.get(COLUMN_OPENING_DATE),
-                                        location);
+                               OpenDating newOpenDating = new OpenDating(food);
                                 list.add(newOpenDating);
                             }
                             listener.onGetAllReady(list);

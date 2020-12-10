@@ -24,21 +24,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
+import ovh.bailon.foodnet.db.FirestoreGroup;
+
 public class GroupAdapter extends ArrayAdapter<String> {
     private FirestoreGroup db;
     FirebaseUser firebaseUser;
-    private Context context;
 
     public GroupAdapter(@NonNull Context context, ArrayList<String> list, FirestoreGroup db) {
         super(context, 0, list);
-        this.context = context;
         this.db = db;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     }

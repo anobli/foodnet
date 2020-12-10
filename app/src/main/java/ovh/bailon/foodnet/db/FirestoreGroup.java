@@ -13,10 +13,8 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ovh.bailon.foodnet;
+package ovh.bailon.foodnet.db;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,19 +30,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.content.Context.MODE_PRIVATE;
+import ovh.bailon.foodnet.OnGroupEventListener;
 
 public class FirestoreGroup {
     private FirebaseFirestore db;
 
     private static final String GROUP_MEMBERS = "Members";
-    private static final String MEMBER_ID = "id";
-    private static final String MEMBER_EMAIL = "email";
     private static final String TAG = "FirestoreGroup";
     private OnGroupEventListener listener;
 
@@ -54,8 +49,6 @@ public class FirestoreGroup {
 
     public void create() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        final String group_id = currentUser.getUid();
-
         Map<String, Object> group = new HashMap<>();
         Map<String, Object> members = new HashMap<>();
         members.put(currentUser.getUid(), currentUser.getEmail());
@@ -77,7 +70,6 @@ public class FirestoreGroup {
     }
 
     public void requestGetAll(String groupId) {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Groups").document(groupId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

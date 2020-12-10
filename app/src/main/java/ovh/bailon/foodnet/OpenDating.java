@@ -19,19 +19,40 @@ import android.content.Context;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
 
 public class OpenDating {
-    private long id;
-    private String food;
-    private Date prodDate;
-    private Date expDate;
-    private Date openingDate;
-    private String location;
-
     private DateFormat df;
+    private HashMap<String, String> hashMap;
+
+    public static final String ID = "Id";
+    public static final String FOOD = "Food";
+    public static final String PROD_DATE = "ProdDate";
+    public static final String EXP_DATE = "ExpDate";
+    public static final String OPENING_DATE = "OpeningDate";
+    public static final String LOCATION = "Location";
+
+    public OpenDating(HashMap<String, String> hashMap) {
+        this.hashMap = hashMap;
+        df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+    }
+
+    public OpenDating(Map<String, Object> hashMap) {
+        this.hashMap = new HashMap<>();
+        for(Map.Entry<String, Object> entry : hashMap.entrySet()) {
+            Object obj = entry.getValue();
+            if (obj.getClass() == String.class) {
+                this.hashMap.put(entry.getKey(), (String) entry.getValue());
+            } else if (obj.getClass() == Long.class) {
+                this.hashMap.put(entry.getKey(), Long.toString((long) entry.getValue()));
+            }
+        }
+        df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+    }
 
     /**
      * Create an OpenDating object.
@@ -46,26 +67,15 @@ public class OpenDating {
      */
     public OpenDating(long id, String food, String prodDate, String expDate,
                       String openingDate, String location, Locale locale) {
-        this.id = id;
-        this.food = food;
-        this.location = location;
-
-        if (food == null) {
-            throw new NullPointerException();
-        }
-
-        if (food.compareTo("") == 0) {
-            throw new IllegalArgumentException();
-        }
+        hashMap = new HashMap<>();
+        hashMap.put(ID, Long.toString(id));
+        hashMap.put(FOOD, food);
+        hashMap.put(PROD_DATE, prodDate);
+        hashMap.put(EXP_DATE, expDate);
+        hashMap.put(OPENING_DATE, openingDate);
+        hashMap.put(LOCATION, location);
 
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-        try {
-            this.prodDate = setDate(prodDate);
-            this.expDate = setDate(expDate);
-            this.openingDate = setDate(openingDate);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException();
-        }
     }
 
     /**
@@ -104,7 +114,7 @@ public class OpenDating {
      * @return The id of the object
      */
     public long getID() {
-        return id;
+        return Long.parseLong(hashMap.get(ID));
     }
 
     /**
@@ -112,15 +122,7 @@ public class OpenDating {
      * @return The food name
      */
     public String getFood() {
-        return food;
-    }
-
-    /**
-     * Set the food name.
-     * @param food The food name
-     */
-    public void setFood(String food) {
-        this.food = food;
+        return hashMap.get(FOOD);
     }
 
     /**
@@ -129,38 +131,7 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getProdDate() {
-        if (prodDate == null) {
-            return "";
-        }
-
-        return df.format(prodDate);
-    }
-
-    private Date setDate(String strDate) throws ParseException {
-        Date date;
-
-        if (strDate != null && strDate.compareTo("") != 0) {
-            return df.parse(strDate);
-        } else {
-            return null;
-        }
-    }
-
-    private Date setDateOrNull(String strDate) {
-        try {
-            return setDate(strDate);
-        } catch (ParseException ex) {
-            return null;
-        }
-    }
-
-    /**
-     * Set the production date.
-     * @param prodDate The production date, represented by a string formatted as
-     *                 define by DateFormat.MEDIUM
-     */
-    public void setProdDate(String prodDate) {
-        this.prodDate = setDateOrNull(prodDate);
+        return hashMap.get(PROD_DATE);
     }
 
     /**
@@ -169,11 +140,7 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getExpDate() {
-        if (expDate == null) {
-            return "";
-        }
-
-        return df.format(expDate);
+        return hashMap.get(EXP_DATE);
     }
 
     /**
@@ -182,7 +149,7 @@ public class OpenDating {
      *                define by DateFormat.MEDIUM
      */
     public void setExpDate(String expDate) {
-        this.expDate = setDateOrNull(expDate);
+        hashMap.put(EXP_DATE, expDate);
     }
 
     /**
@@ -191,49 +158,35 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getOpeningDate() {
-        if (openingDate == null) {
-            return "";
-        }
-
-        return df.format(openingDate);
-    }
-
-    /**
-     * Set the opening date.
-     * @param openingDate The opening date, represented by a string formatted as
-     *                    define by DateFormat.MEDIUM
-     */
-    public void setOpeningDate(String openingDate) {
-        this.openingDate = setDateOrNull(openingDate);
+        return hashMap.get(OPENING_DATE);
     }
 
     public void scheduleNotifications(Context context) {
-        if (expDate == null) {
+        if (hashMap.get(EXP_DATE) == null || hashMap.get(EXP_DATE).length() > 0)
+            return;
+
+        try {
+            Date expDate = df.parse(hashMap.get(EXP_DATE));
+            String food = hashMap.get(FOOD);
+            FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
+        } catch (ParseException ex) {
             return;
         }
-
-        FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(expDate);
-        calendar.add(Calendar.DATE, -1);
-        FoodNetNotification.scheduleNotification(context, food, calendar.getTime().getTime());
     }
 
     public void cancelNotifications(Context context) {
-        if (expDate == null) {
-            return;
-        }
-
-        FoodNetNotification.cancelNotification(context, food);
-        FoodNetNotification.cancelNotification(context, food);
+        FoodNetNotification.cancelNotification(context, hashMap.get(FOOD));
     }
 
     public String getLocation() {
-        return location;
+        return hashMap.get(LOCATION);
     }
 
-    public long getLocationLong() {
-        return Long.parseLong(location);
+    public HashMap<String, String> getHashMap() {
+        return hashMap;
+    }
+
+    public void setId(String id) {
+        hashMap.put(ID, id);
     }
 }

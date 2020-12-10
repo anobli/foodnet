@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
+
 import java.io.IOException;
 import java.util.Locale;
 
@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ovh.bailon.foodnet.FoodnetDBHelper;
+import ovh.bailon.foodnet.db.FoodnetDBHelper;
 
 /**
  * Instrumented test, which will execute on an Android device.
