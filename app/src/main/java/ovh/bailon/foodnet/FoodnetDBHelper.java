@@ -107,7 +107,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_NOTE, new String[] {
-                COLUMN_ID, COLUMN_FOOD, COLUMN_PROD_DATE, COLUMN_EXP_DATE, COLUMN_OPENING_DATE },
+                COLUMN_ID, COLUMN_FOOD, COLUMN_PROD_DATE, COLUMN_EXP_DATE, COLUMN_OPENING_DATE,
+                COLUMN_LOCATION },
                 COLUMN_ID + "=?", new String[] { String.valueOf(id) },
                 null, null, null, null);
         if (cursor != null) {
@@ -120,13 +121,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
             String prodDate = cursor.getString(2);
             String expDate = cursor.getString(3);
             String openingpDate = cursor.getString(4);
-            String location;
+            String location = cursor.getString(5);
 
-            if (cursor.getColumnCount() >= 6) {
-                location = cursor.getString(5);
-            } else {
-                location = Integer.toString(UNKNOWN_LOCATION);
-            }
             openingDate = new OpenDating(id, food, prodDate, expDate, openingpDate, location);
             cursor.close();
             return openingDate;
