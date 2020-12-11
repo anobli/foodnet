@@ -45,6 +45,9 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
     private Locale locale;
     private OnDataEventListener listener;
 
+    /* Used by delete to refresh the good tab */
+    private int lastRequestedLocatation;
+
     private static final String DATABASE_UPDATE_V2 = "ALTER TABLE "
             + TABLE_NOTE + " ADD COLUMN " + COLUMN_LOCATION + " TEXT;";
 
@@ -99,10 +102,34 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
 
     @Override
     public void requestGetAll() {
+        lastRequestedLocatation = 0;
         ArrayList<OpenDating> list = getAll();
         listener.onGetAllReady(list);
     }
 
+    @Override
+    public void requestGetAll(int location) {
+        lastRequestedLocatation = location;
+        ArrayList<OpenDating> noteList = new ArrayList<OpenDating>();
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTE + " WHERE " + COLUMN_LOCATION + " == " + location;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                OpenDating openingDate = new OpenDating(
+                        Integer.parseInt(cursor.getString(0)),
+                        cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4),
+                        cursor.getString(5), locale);
+                noteList.add(openingDate);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        listener.onGetAllReady(noteList);
+    }
     private OpenDating get(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -181,7 +208,10 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         SQLiteDatabase db = this.getWritableDatabase();
         int ret = db.update(TABLE_NOTE, values, COLUMN_ID + " = ?",
                 new String[]{String.valueOf(openDating.getID())});
-        requestGetAll();
+        if (lastRequestedLocatation != 0)
+            requestGetAll(lastRequestedLocatation);
+        else
+            requestGetAll();
 
         return ret;
     }
@@ -195,7 +225,11 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         db.delete(TABLE_NOTE, COLUMN_ID + " = ?",
                 new String[] { String.valueOf(openDating.getID()) });
         db.close();
-        requestGetAll();
+
+        if (lastRequestedLocatation != 0)
+            requestGetAll(lastRequestedLocatation);
+        else
+            requestGetAll();
     }
 
     @Override

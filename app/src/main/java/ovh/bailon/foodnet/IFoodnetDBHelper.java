@@ -7,6 +7,8 @@ public interface IFoodnetDBHelper {
 
     void requestGetAll();
 
+    void requestGetAll(int location);
+
     int update(OpenDating openDating);
 
     void delete(OpenDating openDating);

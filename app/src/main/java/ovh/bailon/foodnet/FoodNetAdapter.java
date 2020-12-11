@@ -56,22 +56,10 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
 
         TextView name = (TextView) convertView.findViewById(R.id.food);
         TextView date = (TextView) convertView.findViewById(R.id.date);
-        ImageView icon = (ImageView) convertView.findViewById(R.id.locationIcon);
         ConstraintLayout layout = (ConstraintLayout) convertView.findViewById(R.id.layout);
 
         name.setText(openDating.getFood());
         date.setText(openDating.getExpDate());
-        switch ((int)openDating.getLocationLong()) {
-            case FREEZER_ID:
-                icon.setImageResource(R.drawable.ic_snowflake_black_24dp);
-                break;
-            case FRIDGE_ID:
-                icon.setImageResource(R.drawable.ic_fridge_black_24dp);
-                break;
-            case CUPBOARD_ID:
-                icon.setImageResource(R.drawable.ic_cupboard_black_24dp);
-                break;
-        }
 
         layout.setTag(position);
         layout.setOnClickListener(new View.OnClickListener() {

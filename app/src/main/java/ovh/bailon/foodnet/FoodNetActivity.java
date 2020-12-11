@@ -201,6 +201,7 @@ public class FoodNetActivity extends AppCompatActivity
             editTextExpDate.setText(openDating.getExpDate());
             editTextOpeningDate.setText(openDating.getOpeningDate());
             for(int i=0; i < locationSpinner.getAdapter().getCount(); i++) {
+                Log.d("DTC", "" + locationSpinner.getAdapter().getItemId(i) + "==" + openDating.getLocationLong());
                 if(locationSpinner.getAdapter().getItemId(i) == openDating.getLocationLong()) {
                     locationSpinner.setSelection(i);
                     break;

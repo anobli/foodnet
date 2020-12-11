@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -65,6 +66,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private FirebaseFirestore db;
     private OnDataEventListener listener;
     private String group_id;
+
+    /* Used by delete to refresh the good tab */
+    private int lastRequestedLocatation;
 
     public FirestoreDBHelper(Context context, String group_id) {
         this.context = context;
@@ -132,9 +136,45 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     }
 
     public void requestGetAll() {
+        lastRequestedLocatation = 0;
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         db.collection("Foods")
                 .whereEqualTo(COLUMN_GROUP, group_id)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            ArrayList<OpenDating> list = new ArrayList<OpenDating>();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> food = document.getData();
+                                String location = Integer.toString(UNKNOWN_LOCATION);
+                                if (food.containsKey(COLUMN_LOCATION))
+                                    location = (String) food.get(COLUMN_LOCATION);
+
+                                OpenDating openDating = new OpenDating(
+                                        (long)food.get(COLUMN_ID),
+                                        (String) food.get(COLUMN_FOOD),
+                                        (String) food.get(COLUMN_PROD_DATE),
+                                        (String) food.get(COLUMN_EXP_DATE),
+                                        (String) food.get(COLUMN_OPENING_DATE),
+                                        location);
+                                list.add(openDating);
+                            }
+                            listener.onGetAllReady(list);
+                        } else {
+                            Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+    }
+
+    public void requestGetAll(int location) {
+        lastRequestedLocatation = location;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        db.collection("Foods")
+                .whereEqualTo(COLUMN_GROUP, group_id)
+                .whereEqualTo(COLUMN_LOCATION, Long.toString(location))
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -171,10 +211,11 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
 
     public void delete(final OpenDating openDating) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        db.collection("Foods")
-                .whereEqualTo(COLUMN_GROUP, group_id)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        Query query = db.collection("Foods")
+                .whereEqualTo(COLUMN_GROUP, group_id);
+        if (lastRequestedLocatation != 0)
+            query = query.whereEqualTo(COLUMN_LOCATION, Long.toString(lastRequestedLocatation));
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {

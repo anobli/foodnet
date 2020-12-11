@@ -22,4 +22,5 @@
     <string name="freezer">Freezer</string>
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
+    <string name="all">All</string>
 </resources>

@@ -50,6 +50,7 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.zxing.BarcodeFormat;
@@ -64,14 +65,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import static ovh.bailon.foodnet.LocationAdapter.CUPBOARD_ID;
+import static ovh.bailon.foodnet.LocationAdapter.FREEZER_ID;
+import static ovh.bailon.foodnet.LocationAdapter.FRIDGE_ID;
+import static ovh.bailon.foodnet.LocationAdapter.UNKNOWN_LOCATION;
+
 public class FoodNetListActivity extends AppCompatActivity
-        implements View.OnClickListener, OnDataEventListener {
+        implements View.OnClickListener, OnDataEventListener, TabLayout.OnTabSelectedListener {
     private IFoodnetDBHelper db;
     private final ArrayList<OpenDating> netList = new ArrayList<OpenDating>();
     private ArrayAdapter<OpenDating> listViewAdapter;
     private ListView listView;
+    private TabLayout tabLayout;
     private static final int RC_SIGN_IN = 123;
     private static final int QR_CODE_RESULT = 0;
+
+    /* Used to know if we must show or hide the tab for food without know location */
+    private boolean testUnknowLocation;
 
 
     @Override
@@ -97,6 +107,8 @@ public class FoodNetListActivity extends AppCompatActivity
         listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
         this.listView.setAdapter(this.listViewAdapter);
+        tabLayout = findViewById(R.id.tabLayout);
+        tabLayout.setOnTabSelectedListener(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityResultLauncher<String> request = registerForActivityResult(
@@ -121,11 +133,18 @@ public class FoodNetListActivity extends AppCompatActivity
         adView.loadAd(adRequest);
     }
 
+    private void requestGetAll() {
+        if (tabLayout.getSelectedTabPosition() == 0) db.requestGetAll(FRIDGE_ID);
+        if (tabLayout.getSelectedTabPosition() == 1) db.requestGetAll(FREEZER_ID);
+        if (tabLayout.getSelectedTabPosition() == 2) db.requestGetAll(CUPBOARD_ID);
+        if (tabLayout.getSelectedTabPosition() == 3) db.requestGetAll();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
 
-        db.requestGetAll();
+        requestGetAll();
     }
 
     public Bitmap appendImages(Bitmap bmp1, Bitmap bmp2, boolean vertical) {
@@ -216,6 +235,9 @@ public class FoodNetListActivity extends AppCompatActivity
 
     @Override
     public void onGetAllReady(ArrayList<OpenDating> list) {
+        if (testUnknowLocation && list.size() != 0)
+            tabLayout.getChildAt(3).setVisibility(View.VISIBLE);
+
         netList.clear();
         netList.addAll(list);
         listViewAdapter.notifyDataSetChanged();
@@ -270,7 +292,7 @@ public class FoodNetListActivity extends AppCompatActivity
                                 invalidateOptionsMenu();
                                 db = new FoodnetDBHelper(FoodNetListActivity.this);
                                 db.registerOnDataChange(FoodNetListActivity.this);
-                                db.requestGetAll();
+                                requestGetAll();
                             }
                         });
                 return true;
@@ -297,7 +319,7 @@ public class FoodNetListActivity extends AppCompatActivity
                 String group = sharedPreferences.getString("group", user.getUid());
                 db = new FirestoreDBHelper(this, group);
                 db.registerOnDataChange(this);
-                db.requestGetAll();
+                requestGetAll();
             }
         } else if (requestCode == QR_CODE_RESULT) {
             if (resultCode == 0 && data.hasExtra("url")) {
@@ -305,5 +327,21 @@ public class FoodNetListActivity extends AppCompatActivity
                 startActivity(intent);
             }
         }
+    }
+
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        requestGetAll();
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }
