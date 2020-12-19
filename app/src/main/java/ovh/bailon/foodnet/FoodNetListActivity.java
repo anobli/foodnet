@@ -51,9 +51,11 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import ovh.bailon.foodnet.db.FirestoreDBHelper;
 import ovh.bailon.foodnet.db.FoodnetDBHelper;
@@ -141,7 +143,9 @@ public class FoodNetListActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.print_qr:
-                Bitmap sheet = QrCodeGenerator.createQrCodeSheet(4, 6);
+                Uri.Builder builder = new Uri.Builder();
+                builder.scheme("foodnet").authority("foodnet.bailon.ovh");
+                Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
                 PrintHelper photoPrinter = new PrintHelper(this);
                 photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
                 photoPrinter.printBitmap("QR code", sheet);

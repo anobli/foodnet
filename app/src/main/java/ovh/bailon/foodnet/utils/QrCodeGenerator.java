@@ -17,6 +17,7 @@ package ovh.bailon.foodnet.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.net.Uri;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -56,7 +57,7 @@ public class QrCodeGenerator {
         return bitmap;
     }
 
-    private static Bitmap createQrCode() {
+    private static Bitmap createQrCode(Uri.Builder builder) {
         Random random = new Random();
         int sn;
 
@@ -64,7 +65,11 @@ public class QrCodeGenerator {
         sn = random.nextInt(Integer.MAX_VALUE);
 //        } while (db.openDatingExists(sn));
 
-        String text = "foodnet://foodnet.bailon.ovh?id=" + String.format(Locale.US, "%010d", sn);
+        builder.clearQuery();
+        builder.appendQueryParameter("id", String.format(Locale.US, "%010d", sn));
+        Uri uri = builder.build();
+
+        String text = uri.toString();
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE,200,200);
@@ -78,20 +83,20 @@ public class QrCodeGenerator {
         return null;
     }
 
-    private static Bitmap createQrCodeLine(int cols) {
-        Bitmap line = createQrCode();
+    private static Bitmap createQrCodeLine(Uri.Builder builder, int cols) {
+        Bitmap line = createQrCode(builder);
         for (int i = 1; i < cols; i++) {
-            Bitmap qr = createQrCode();
+            Bitmap qr = createQrCode(builder);
             line = appendImages(line, qr, false);
         }
 
         return line;
     }
 
-    public static Bitmap createQrCodeSheet(int cols, int rows) {
-        Bitmap sheet = createQrCodeLine(cols);
+    public static Bitmap createQrCodeSheet(Uri.Builder builder, int cols, int rows) {
+        Bitmap sheet = createQrCodeLine(builder, cols);
         for (int i = 1; i < rows; i++) {
-            Bitmap line = createQrCodeLine(cols);
+            Bitmap line = createQrCodeLine(builder, cols);
             sheet = appendImages(sheet, line, true);
         }
 
