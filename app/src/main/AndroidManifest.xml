@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ovh.bailon.foodnet">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".utils.QrCodeScanActivity"></activity>
-        <activity android:name=".InviteActivity">
+        <activity android:name=".InviteActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -32,7 +32,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="@string/mobileads_app_id" />
 
-        <activity android:name=".FoodNetListActivity">
+        <activity android:name=".FoodNetListActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,7 +40,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".FoodNetActivity" android:windowSoftInputMode="adjustPan">
+        <activity android:name=".FoodNetActivity" android:exported="true" android:windowSoftInputMode="adjustPan" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -63,7 +63,7 @@
         </activity>
 
         <receiver android:name=".FoodNetReceiver" />
-        <receiver android:name=".FoodNetBootReceiver" >
+        <receiver android:name=".FoodNetBootReceiver" android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />

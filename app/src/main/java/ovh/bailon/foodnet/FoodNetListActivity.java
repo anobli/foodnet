@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -123,6 +124,12 @@ public class FoodNetListActivity extends AppCompatActivity
         AdView adView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+
+        ImageButton print_qr = findViewById(R.id.print_qr);
+        print_qr.setOnClickListener(this);
+
+        ImageButton scan_qr = findViewById(R.id.scan_qr);
+        scan_qr.setOnClickListener(this);
     }
 
     private void requestGetAll() {
@@ -141,19 +148,16 @@ public class FoodNetListActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.print_qr:
-                Uri.Builder builder = new Uri.Builder();
-                builder.scheme("foodnet").authority("foodnet.bailon.ovh");
-                Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
-                PrintHelper photoPrinter = new PrintHelper(this);
-                photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-                photoPrinter.printBitmap("QR code", sheet);
-                break;
-            case R.id.scan_qr:
+        if (v.getId() ==  R.id.print_qr) {
+            Uri.Builder builder = new Uri.Builder();
+            builder.scheme("foodnet").authority("foodnet.bailon.ovh");
+            Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
+            PrintHelper photoPrinter = new PrintHelper(this);
+            photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+            photoPrinter.printBitmap("QR code", sheet);
+        } else if(v.getId() == R.id.scan_qr) {
                 Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
                 startActivityForResult(intent, QR_CODE_RESULT);
-                break;
         }
     }
 
@@ -193,35 +197,34 @@ public class FoodNetListActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.connect:
-                List<AuthUI.IdpConfig> providers = Arrays.asList(
-                        new AuthUI.IdpConfig.GoogleBuilder().build());
+        if (item.getItemId() == R.id.connect) {
+            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                    new AuthUI.IdpConfig.GoogleBuilder().build());
 
-                startActivityForResult(
-                        AuthUI.getInstance()
-                                .createSignInIntentBuilder()
-                                .setAvailableProviders(providers)
-                                .build(),
-                        RC_SIGN_IN);
-                return true;
-            case R.id.disconnect:
-                AuthUI.getInstance()
-                        .signOut(this)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            public void onComplete(@NonNull Task<Void> task) {
-                                invalidateOptionsMenu();
-                                db = new FoodnetDBHelper(FoodNetListActivity.this);
-                                db.registerOnDataChange(FoodNetListActivity.this);
-                                requestGetAll();
-                            }
-                        });
-                return true;
-            case R.id.group:
-                Intent intent = new Intent(this, InviteActivity.class);
-                startActivity(intent);
-                return true;
-            default:
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN);
+            return true;
+        } else if (item.getItemId() == R.id.disconnect) {
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            invalidateOptionsMenu();
+                            db = new FoodnetDBHelper(FoodNetListActivity.this);
+                            db.registerOnDataChange(FoodNetListActivity.this);
+                            requestGetAll();
+                        }
+                    });
+            return true;
+        } else if (item.getItemId() == R.id.group) {
+            Intent intent = new Intent(this, InviteActivity.class);
+            startActivity(intent);
+            return true;
+        } else {
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -241,7 +244,7 @@ public class FoodNetListActivity extends AppCompatActivity
                 requestGetAll();
             }
         } else if (requestCode == QR_CODE_RESULT) {
-            if (resultCode == 0 && data.hasExtra("url")) {
+            if (resultCode == 0 && data != null && data.hasExtra("url")) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getStringExtra("url")));
                 startActivity(intent);
             }

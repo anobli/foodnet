@@ -60,7 +60,7 @@ public class FoodNetNotification {
         notificationIntent.putExtra(FoodNetReceiver.NOTIFICATION,
                 getNotification(context, title, content));
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);
     }

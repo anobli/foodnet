@@ -23,4 +23,6 @@
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
     <string name="all">All</string>
+    <string name="qr_print_content_desc">Print few randomly generated QR code</string>
+    <string name="scan_qr_content_desc">Scan a QR code</string>
 </resources>
