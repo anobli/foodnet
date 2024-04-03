@@ -16,6 +16,7 @@
 package ovh.bailon.foodnet;
 
 import static org.junit.Assert.*;
+import static ovh.bailon.foodnet.LocationAdapter.FRIDGE_ID;
 
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class OpenDatingUnitTest {
         OpenDating openDating;
 
         openDating = new OpenDating(1, "Socca", "Oct 4, 2020", "Oct 11, 2020",
-                "Oct 4, 2020");
+                "Oct 4, 2020", FRIDGE_ID);
 
         assertEquals(1, openDating.getID());
         assertEquals("Socca", openDating.getFood());
@@ -43,14 +44,14 @@ public class OpenDatingUnitTest {
         assertEquals("Oct 11, 2020", openDating.getExpDate());
         assertEquals("Oct 4, 2020", openDating.getOpeningDate());
 
-        openDating = new OpenDating(2, "Cade", null, null, null);
+        openDating = new OpenDating(2, "Cade", null, null, null, FRIDGE_ID);
         assertEquals(2, openDating.getID());
         assertEquals("Cade", openDating.getFood());
         assertEquals("", openDating.getProdDate());
         assertEquals("", openDating.getExpDate());
         assertEquals("", openDating.getOpeningDate());
 
-        openDating = new OpenDating(3, "Pan Bagnat", "", null, null);
+        openDating = new OpenDating(3, "Pan Bagnat", "", null, null, FRIDGE_ID);
         assertEquals(3, openDating.getID());
         assertEquals("Pan Bagnat", openDating.getFood());
         assertEquals("", openDating.getProdDate());
@@ -58,14 +59,14 @@ public class OpenDatingUnitTest {
         assertEquals("", openDating.getOpeningDate());
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void testOpenDatingConstructorFoodNull() {
-        OpenDating openDating = new OpenDating(4, null, null, null, null);
+        OpenDating openDating = new OpenDating(4, null, null, null, null, FRIDGE_ID);
     }
 
     @Test (expected = IllegalArgumentException.class)
     public void testOpenDatingConstructorFoodEmpty() {
-        OpenDating openDating = new OpenDating(5, "", null, null, null);
+        OpenDating openDating = new OpenDating(5, "", null, null, null, FRIDGE_ID);
     }
 
     @Test
@@ -73,24 +74,24 @@ public class OpenDatingUnitTest {
         OpenDating openDating;
 
         try {
-            openDating = new OpenDating(6, "Ratatouille", "10", null, null);
+            openDating = new OpenDating(6, "Ratatouille", "10", null, null, FRIDGE_ID);
             fail("IllegalArgumentException have not been throw");
         } catch(IllegalArgumentException ex) {
-          assert true;
+            assert true;
         }
 
         try {
-            openDating = new OpenDating(6, "Ratatouille", "10", null, null);
+            openDating = new OpenDating(6, "Ratatouille", "10", null, null, FRIDGE_ID);
             fail("IllegalArgumentException have not been throw");
         } catch (IllegalArgumentException ex) {
-          assert true;
+            assert true;
         }
 
         try {
-            openDating = new OpenDating(6, "Ratatouille", "10", null, null);
+            openDating = new OpenDating(6, "Ratatouille", "10", null, null, FRIDGE_ID);
             fail("IllegalArgumentException have not been throw");
         } catch (IllegalArgumentException ex) {
-          assert true;
+            assert true;
         }
     }
 }

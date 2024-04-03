@@ -16,6 +16,7 @@
 package ovh.bailon.foodnet;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,6 +42,51 @@ public class OpenDating {
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
     }
 
+    protected boolean checkDate(String id) {
+        if (hashMap.containsKey(id) && hashMap.get(id) != null) {
+            if (!((String)hashMap.get(id)).isEmpty()) {
+                try {
+                    df.parse((String) hashMap.get(id));
+                } catch (ParseException e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public boolean check() {
+        if (hashMap == null) {
+            return false;
+        }
+
+        if (hashMap.size() == 0) {
+            return false;
+        }
+
+        if (!hashMap.containsKey(FOOD) || hashMap.get(FOOD) == null) {
+            return false;
+        }
+
+        if (((String)hashMap.get(FOOD)).isEmpty()) {
+            return false;
+        }
+
+        if (!checkDate(EXP_DATE)) {
+            return false;
+        }
+
+        if (!checkDate(OPENING_DATE)) {
+            return false;
+        }
+
+        if (!checkDate(PROD_DATE)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public OpenDating(Map<String, Object> hashMap) {
         this.hashMap = new HashMap<>();
         for(Map.Entry<String, Object> entry : hashMap.entrySet()) {
@@ -52,6 +98,10 @@ public class OpenDating {
             }
         }
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+
+        if (!check()) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -76,6 +126,10 @@ public class OpenDating {
         hashMap.put(LOCATION, location);
 
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+
+        if (!check()) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -131,7 +185,9 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getProdDate() {
-        return hashMap.get(PROD_DATE);
+        if (hashMap.get(PROD_DATE) == null)
+            return "";
+        return (String) hashMap.get(PROD_DATE);
     }
 
     /**
@@ -140,7 +196,9 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getExpDate() {
-        return hashMap.get(EXP_DATE);
+        if (hashMap.get(EXP_DATE) == null)
+            return "";
+        return (String) hashMap.get(EXP_DATE);
     }
 
     /**
@@ -158,7 +216,9 @@ public class OpenDating {
      *         by DateFormat.MEDIUM
      */
     public String getOpeningDate() {
-        return hashMap.get(OPENING_DATE);
+        if (hashMap.get(OPENING_DATE) == null)
+            return "";
+        return (String) hashMap.get(OPENING_DATE);
     }
 
     public void scheduleNotifications(Context context) {

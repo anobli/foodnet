@@ -22,7 +22,9 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.Semaphore;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ovh.bailon.foodnet.db.FoodnetDBHelper;
+import static ovh.bailon.foodnet.LocationAdapter.FRIDGE_ID;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -37,8 +40,21 @@ import ovh.bailon.foodnet.db.FoodnetDBHelper;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 @RunWith(AndroidJUnit4.class)
-public class FoodNetDBHelperInstrumentedTest {
+public class FoodNetDBHelperInstrumentedTest implements OnDataEventListener {
     private FoodnetDBHelper db;
+    private OpenDating openDating = null;
+    protected Semaphore mutex = new Semaphore(1);
+
+    @Override
+    public void onGetAllReady(ArrayList<OpenDating> list) {
+
+    }
+
+    @Override
+    public void onGetReady(OpenDating openDating) {
+        this.openDating = openDating;
+        mutex.release();
+    }
 
     @Before
     public void createDb() {
@@ -52,32 +68,36 @@ public class FoodNetDBHelperInstrumentedTest {
     }
 
     @Test
-    public void testGetAndAdd() {
-        OpenDating openDating;
-
-        openDating = db.get(123456);
+    public void testGetAndAdd() throws InterruptedException {
+        openDating = null;
+        db.requestGet(123456);
+        mutex.acquire();
         assertEquals(null, openDating);
 
-        openDating = new OpenDating(123456, "Socca", null, null, null);
+        openDating = new OpenDating(123456, "Socca", null, null, null, FRIDGE_ID);
         db.add(openDating);
 
-        openDating = db.get(123456);
+        openDating = null;
+        db.requestGet(123456);
+        mutex.acquire();
         assertEquals(123456, openDating.getID());
         assertEquals("Socca", openDating.getFood());
     }
 
     @Test
-    public void testDelete() {
-        OpenDating openDating;
-
-        openDating = new OpenDating(123457, "Cade", null, null, null);
+    public void testDelete() throws InterruptedException {
+        openDating = new OpenDating(123457, "Cade", null, null, null, FRIDGE_ID);
         db.add(openDating);
 
-        openDating = db.get(123457);
+        openDating = null;
+        db.requestGet(123457);
+        mutex.acquire();
         assertEquals("Cade", openDating.getFood());
 
         db.delete(openDating);
-        openDating = db.get(123457);
+        openDating = null;
+        db.requestGet(123457);
+        mutex.acquire();
         assertEquals(null, openDating);
     }
 
@@ -85,7 +105,7 @@ public class FoodNetDBHelperInstrumentedTest {
     public void testDeleteInvalid() {
         OpenDating openDating;
 
-        openDating = new OpenDating(123460, "Chiken", null, null, null);
+        openDating = new OpenDating(123460, "Chiken", null, null, null, FRIDGE_ID);
         db.delete(openDating);
     }
 
@@ -95,20 +115,23 @@ public class FoodNetDBHelperInstrumentedTest {
     }
 
     @Test
-    public void testUpdate() {
-        OpenDating openDating;
+    public void testUpdate() throws InterruptedException {
 
-        openDating = new OpenDating(123458, "Ratatouille", null, null, null);
+        openDating = new OpenDating(123458, "Ratatouille", null, null, null, FRIDGE_ID);
         db.add(openDating);
 
-        openDating = db.get(123458);
+        openDating = null;
+        db.requestGet(123458);
+        mutex.acquire();
         assertEquals("Ratatouille", openDating.getFood());
         assertEquals("", openDating.getExpDate());
 
         openDating.setExpDate("Oct 21, 2020");
         db.update(openDating);
 
-        openDating = db.get(123458);
+        openDating = null;
+        db.requestGet(123458);
+        mutex.acquire();
         assertEquals("Ratatouille", openDating.getFood());
         assertEquals("Oct 21, 2020", openDating.getExpDate());
     }
@@ -119,13 +142,13 @@ public class FoodNetDBHelperInstrumentedTest {
     }
 
     @Test
-    public void testUpdateInvalid() {
-        OpenDating openDating;
-
-        openDating = new OpenDating(123459, "Cassoulet", null, null, null);
+    public void testUpdateInvalid() throws InterruptedException {
+        openDating = new OpenDating(123459, "Cassoulet", null, null, null, FRIDGE_ID);
         db.update(openDating);
 
-        openDating = db.get(123459);
+        openDating = null;
+        db.requestGet(123459);
+        mutex.acquire();
         assertEquals(null, openDating);
     }
 }
