@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "ovh.bailon.foodnet"
+    namespace "ovh.bailon.foodnet2"
     compileSdk 34
 
     defaultConfig {
-        applicationId "ovh.bailon.foodnet"
+        applicationId "ovh.bailon.foodnet2"
         minSdkVersion 21
         targetSdk 33
         versionCode 4
