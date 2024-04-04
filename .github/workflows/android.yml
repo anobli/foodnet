@@ -1,5 +1,15 @@
 name: Android CI
 
+env:
+  # The name of the main module repository
+  main_project_module: app
+
+  # The name of the Play Store
+  playstore_name: FoodNet
+  SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+  SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+  SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+
 on:
   push:
     branches: [ "main" ]
@@ -21,64 +31,51 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    # Set Current Date As Env Variable
+    - name: Set current date as env variable
+      run: echo "date_today=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
     - name: Decrypt Ads and firebase keys
       run: .github/workflows/decrypt_secret.sh
       env:
         LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
-        playstore_name: FoodNet
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
     - name: Build with Gradle
       run: ./gradlew build -P$HOME/secrets/google_ads.properties
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
     - name: Build apk debug project (APK)
       run: ./gradlew assembleDebug
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
     # Create APK Release
     - name: Build apk release project (APK)
       run: ./gradlew assembleRelease
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
     # Create Bundle AAB Release
     # Noted for main module build bundleRelease
     - name: Build app bundle release (AAB)
       run: ./gradlew bundleRelease
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
     # Upload Artifact Build
     # Noted For Output app/build/outputs/apk/debug/
-    - name: Upload APK Debug - ${{ env.repository_name }}
+    - name: Upload APK Debug
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) debug generated
+        name: ${{ env.date_today }} - ${{ env.playstore_name }} - APK(s) debug generated
         path: app/build/outputs/apk/debug/
 
     # Noted For Output app/build/outputs/apk/release/
-    - name: Upload APK Release - ${{ env.repository_name }}
+    - name: Upload APK Release
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - APK(s) release generated
+        name: ${{ env.date_today }} - ${{ env.playstore_name }} - APK(s) release generated
         path: app/build/outputs/apk/release/
 
     # Noted For Output app/build/outputs/bundle/release/
-    - name: Upload AAB (App Bundle) Release - ${{ env.repository_name }}
+    - name: Upload AAB (App Bundle) Release
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.date_today }} - ${{ env.playstore_name }} - ${{ env.repository_name }} - App bundle(s) AAB release generated
+        name: ${{ env.date_today }} - ${{ env.playstore_name }} - App bundle(s) AAB release generated
         path: app/build/outputs/bundle/release/
