@@ -121,6 +121,44 @@ The bundle will be at:
 app/build/outputs/bundle/release/app-release.aab
 ```
 
+## Building with Docker
+
+If you prefer not to install the Android SDK and tools locally, you can use Docker to build the app in a containerized environment.
+
+### Build the Docker Image
+
+```bash
+docker build -t foodnet-builder .
+```
+
+### Open a Shell in the Container
+
+```bash
+docker run --rm -it \
+    -v "$(pwd)":/workspace \
+    -v gradle-cache:/root/.gradle \
+    foodnet-builder \
+    /bin/bash
+```
+
+Once inside the container, you can use any of the build commands documented above:
+
+```bash
+# Build debug APK
+./gradlew assembleDebug
+
+# Build release APK
+./gradlew assembleRelease
+
+# Build App Bundle
+./gradlew bundleRelease
+
+# Clean build
+./gradlew clean
+```
+
+The build outputs will be available in your project directory since it's mounted as a volume.
+
 ## Using Android Studio
 
 1. Open Android Studio
