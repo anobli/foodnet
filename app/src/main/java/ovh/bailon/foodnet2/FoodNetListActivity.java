@@ -83,7 +83,7 @@ public class FoodNetListActivity extends AppCompatActivity
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
             }
         });
 
@@ -116,12 +116,14 @@ public class FoodNetListActivity extends AppCompatActivity
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        invalidateOptionsMenu();
-                        SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
-                        String group = sharedPreferences.getString("group", user.getUid());
-                        db = new FirestoreDBHelper(this, group);
-                        db.registerOnDataChange(this);
-                        requestGetAll();
+                        if (user != null) {
+                            invalidateOptionsMenu();
+                            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+                            String group = sharedPreferences.getString("group", user.getUid());
+                            db = new FirestoreDBHelper(this, group);
+                            db.registerOnDataChange(this);
+                            requestGetAll();
+                        }
                     }
                 });
 
@@ -169,7 +171,7 @@ public class FoodNetListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         if (v.getId() ==  R.id.print_qr) {
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("foodnet").authority("foodnet.bailon.ovh");
@@ -184,7 +186,7 @@ public class FoodNetListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onGetAllReady(ArrayList<OpenDating> list) {
+    public void onGetAllReady(@NonNull ArrayList<OpenDating> list) {
         netList.clear();
         netList.addAll(list);
         listViewAdapter.notifyDataSetChanged();
@@ -195,7 +197,7 @@ public class FoodNetListActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         menu.clear();
         MenuInflater inflater = getMenuInflater();
 
@@ -210,14 +212,14 @@ public class FoodNetListActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.connect_menu, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle item selection
         if (item.getItemId() == R.id.connect) {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -251,17 +253,17 @@ public class FoodNetListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTabSelected(TabLayout.Tab tab) {
+    public void onTabSelected(@NonNull TabLayout.Tab tab) {
         requestGetAll();
     }
 
     @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
+    public void onTabUnselected(@NonNull TabLayout.Tab tab) {
 
     }
 
     @Override
-    public void onTabReselected(TabLayout.Tab tab) {
+    public void onTabReselected(@NonNull TabLayout.Tab tab) {
 
     }
 }

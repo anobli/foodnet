@@ -42,8 +42,9 @@ public class GroupAdapter extends ArrayAdapter<String> {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         String member = getItem(position);
 
         if (convertView == null) {

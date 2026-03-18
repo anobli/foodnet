@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import ovh.bailon.foodnet2.R;
 
 public class ListItemTextValue extends ListItemBase {
@@ -51,6 +53,7 @@ public class ListItemTextValue extends ListItemBase {
             valueTxt.setText(value);
     }
 
+    @NonNull
     @Override
     public String toString() {
         if (valueTxt != null)

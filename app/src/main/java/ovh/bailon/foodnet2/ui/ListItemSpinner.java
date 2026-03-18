@@ -23,6 +23,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+
 import ovh.bailon.foodnet2.R;
 
 public class ListItemSpinner<T> extends ListItemBase implements AdapterView.OnItemSelectedListener {
@@ -46,6 +48,7 @@ public class ListItemSpinner<T> extends ListItemBase implements AdapterView.OnIt
         return convertView;
     }
 
+    @NonNull
     @Override
     public String toString() {
         if (spinner != null) {
