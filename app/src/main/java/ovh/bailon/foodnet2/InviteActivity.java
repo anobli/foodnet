@@ -15,6 +15,8 @@
 
 package ovh.bailon.foodnet2;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,6 +55,7 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
     private ArrayAdapter<String> listViewAdapter;
     private final ArrayList<String> members = new ArrayList<>();
     FirebaseUser currentUser;
+    private ActivityResultLauncher<Intent> qrCodeScanLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,22 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
         listView.setAdapter(this.listViewAdapter);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        qrCodeScanLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == 0 && result.getData() != null && result.getData().hasExtra("url")) {
+                        String url = result.getData().getStringExtra("url");
+
+                        if (url.contains("group")) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(result.getData().getStringExtra("url")));
+                            startActivity(intent);
+                        } else {
+                            Toast toast = Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+                    }
+                });
 
         findViewById(R.id.inviteButton).setOnClickListener(this);
         findViewById(R.id.invite_scan_qr).setOnClickListener(this);
@@ -144,26 +163,8 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
             showQrCode();
         } else if (v.getId() == R.id.invite_scan_qr) {
             Intent intent = new Intent(this, QrCodeScanActivity.class);
-            startActivityForResult(intent, QR_CODE_RESULT);
+            qrCodeScanLauncher.launch(intent);
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == QR_CODE_RESULT) {
-            if (resultCode == 0 && data.hasExtra("url")) {
-                String url = data.getStringExtra("url");
-
-                if (url.contains("group")) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getStringExtra("url")));
-                    startActivity(intent);
-                } else {
-                    Toast toast = Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-        }
-    }
 }
