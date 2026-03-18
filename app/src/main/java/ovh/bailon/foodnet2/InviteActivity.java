@@ -76,8 +76,8 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
                     if (result.getResultCode() == 0 && result.getData() != null && result.getData().hasExtra("url")) {
                         String url = result.getData().getStringExtra("url");
 
-                        if (url.contains("group")) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(result.getData().getStringExtra("url")));
+                        if (url != null && url.contains("group")) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                             startActivity(intent);
                         } else {
                             Toast toast = Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG);

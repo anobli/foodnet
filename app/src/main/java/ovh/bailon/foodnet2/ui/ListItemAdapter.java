@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 public class ListItemAdapter extends ArrayAdapter<ListItemBase> {
@@ -27,8 +29,9 @@ public class ListItemAdapter extends ArrayAdapter<ListItemBase> {
         super(context, 0, list);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         ListItemBase listItemBase = getItem(position);
 
         return listItemBase.getView(position, convertView, parent);

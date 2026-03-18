@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 
@@ -72,6 +74,7 @@ public class ListItemDate extends ListItemBase
             valueTxt.setText(value);
     }
 
+    @NonNull
     @Override
     public String toString() {
         if (valueTxt != null)

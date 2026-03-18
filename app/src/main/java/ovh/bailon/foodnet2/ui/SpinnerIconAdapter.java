@@ -34,8 +34,9 @@ public class SpinnerIconAdapter extends ArrayAdapter<SpinnerItemIcon> {
         super(context, 0);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         SpinnerItemIcon item = (SpinnerItemIcon) getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext())

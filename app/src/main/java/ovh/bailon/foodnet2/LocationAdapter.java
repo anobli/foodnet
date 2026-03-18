@@ -26,11 +26,10 @@ public class LocationAdapter extends SpinnerIconAdapter {
     public final static int FRIDGE_ID = 1;
     public final static int FREEZER_ID = 2;
     public final static int CUPBOARD_ID = 3;
-    private ArrayList<SpinnerItemIcon> items;
 
     public LocationAdapter(Context context) {
         super(context);
-        items = new ArrayList<>();
+        ArrayList<SpinnerItemIcon> items = new ArrayList<>();
         items.add(new SpinnerItemIcon(FRIDGE_ID, R.string.fridge, R.drawable.ic_fridge_black_24dp));
         items.add(new SpinnerItemIcon(FREEZER_ID, R.string.freezer, R.drawable.ic_snowflake_black_24dp));
         items.add(new SpinnerItemIcon(CUPBOARD_ID, R.string.cupboard, R.drawable.ic_cupboard_black_24dp));

@@ -1,3 +1,4 @@
+#file: noinspection SpellCheckingInspection,SpellCheckingInspection
 name: Android CI
 
 env:
@@ -5,6 +6,7 @@ env:
   main_project_module: app
 
   # The name of the Play Store
+  # noinspection SpellCheckingInspection
   playstore_name: FoodNet
   SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
   SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
@@ -28,6 +30,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
+        # noinspection SpellCheckingInspection
         distribution: 'temurin'
         cache: gradle
 
