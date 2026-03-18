@@ -36,7 +36,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:contentDescription="FIXME"
+        android:contentDescription="@string/date_field_content_desc"
         android:ems="10"
         android:focusable="false"
         android:inputType="date"
