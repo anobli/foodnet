@@ -66,6 +66,9 @@ public class InviteActivity extends AppCompatActivity implements OnGroupEventLis
         listView.setAdapter(this.listViewAdapter);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        findViewById(R.id.inviteButton).setOnClickListener(this);
+        findViewById(R.id.invite_scan_qr).setOnClickListener(this);
     }
 
     @Override
