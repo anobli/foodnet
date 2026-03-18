@@ -25,4 +25,10 @@
     <string name="all">All</string>
     <string name="qr_print_content_desc">Print few randomly generated QR code</string>
     <string name="scan_qr_content_desc">Scan a QR code</string>
+    <string name="delete_button_content_desc">Delete</string>
+    <string name="show_qr_code_content_desc">Show QR code for group invitation</string>
+    <string name="scan_qr_invite_content_desc">Scan QR code to join group</string>
+    <string name="qr_code_image_content_desc">QR code for group invitation</string>
+    <string name="location_icon_content_desc">Storage location icon</string>
+    <string name="date_field_content_desc">Date field</string>
 </resources>
