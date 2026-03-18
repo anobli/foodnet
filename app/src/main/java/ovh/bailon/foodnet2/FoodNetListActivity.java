@@ -73,6 +73,8 @@ public class FoodNetListActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private static final int RC_SIGN_IN = 123;
     private static final int QR_CODE_RESULT = 0;
+    private ActivityResultLauncher<Intent> qrCodeScanLauncher;
+    private ActivityResultLauncher<Intent> signInLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,30 @@ public class FoodNetListActivity extends AppCompatActivity
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
         listView.setAdapter(this.listViewAdapter);
         tabLayout = findViewById(R.id.tabLayout);
-        tabLayout.setOnTabSelectedListener(this);
+        tabLayout.addOnTabSelectedListener(this);
+
+        qrCodeScanLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == 0 && result.getData() != null && result.getData().hasExtra("url")) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(result.getData().getStringExtra("url")));
+                        startActivity(intent);
+                    }
+                });
+
+        signInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        invalidateOptionsMenu();
+                        SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+                        String group = sharedPreferences.getString("group", user.getUid());
+                        db = new FirestoreDBHelper(this, group);
+                        db.registerOnDataChange(this);
+                        requestGetAll();
+                    }
+                });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityResultLauncher<String> request = registerForActivityResult(
@@ -154,7 +179,7 @@ public class FoodNetListActivity extends AppCompatActivity
             photoPrinter.printBitmap("QR code", sheet);
         } else if(v.getId() == R.id.scan_qr) {
                 Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
-                startActivityForResult(intent, QR_CODE_RESULT);
+                qrCodeScanLauncher.launch(intent);
         }
     }
 
@@ -198,12 +223,11 @@ public class FoodNetListActivity extends AppCompatActivity
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.GoogleBuilder().build());
 
-            startActivityForResult(
+            signInLauncher.launch(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setAvailableProviders(providers)
-                            .build(),
-                    RC_SIGN_IN);
+                            .build());
             return true;
         } else if (item.getItemId() == R.id.disconnect) {
             AuthUI.getInstance()
@@ -225,29 +249,6 @@ public class FoodNetListActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                invalidateOptionsMenu();
-                SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
-                String group = sharedPreferences.getString("group", user.getUid());
-                db = new FirestoreDBHelper(this, group);
-                db.registerOnDataChange(this);
-                requestGetAll();
-            }
-        } else if (requestCode == QR_CODE_RESULT) {
-            if (resultCode == 0 && data != null && data.hasExtra("url")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.getStringExtra("url")));
-                startActivity(intent);
-            }
-        }
-    }
-
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
