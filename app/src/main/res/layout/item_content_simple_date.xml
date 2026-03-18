@@ -40,7 +40,6 @@
         android:ems="10"
         android:focusable="false"
         android:inputType="date"
-        android:onClick="onClick"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/itemTextName"
         app:layout_constraintTop_toTopOf="parent" />
