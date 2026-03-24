@@ -29,10 +29,6 @@
             </intent-filter>
         </activity>
 
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/mobileads_app_id" />
-
         <activity android:name=".FoodNetListActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

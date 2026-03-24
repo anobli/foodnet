@@ -43,21 +43,6 @@ You need to set up Firebase for this project:
    cp /path/to/your/google-services.json app/google-services.json
    ```
 
-### 3. Configure Google Ads (Optional for Debug Builds)
-
-For **debug builds**, the app uses test Ad IDs automatically, so this step is optional.
-
-For **release builds**, create a `google_ads.properties` file in the project root:
-
-```properties
-# google_ads.properties
-MOBILEADS_APP_ID=ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX
-BANNER_AD_MAIN=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-BANNER_AD_LIST=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
-```
-
-Replace the X's with your actual Google AdMob IDs from [AdMob Console](https://apps.admob.com/).
-
 ## Building the App
 
 ### Build Debug APK (For Testing)
@@ -173,7 +158,6 @@ Or use the run button to build and install directly on a connected device/emulat
 | File | Location | Required For | Status |
 |------|----------|--------------|--------|
 | `google-services.json` | `app/` | All builds | **Required** |
-| `google_ads.properties` | Root directory | Release builds only | Optional for debug |
 | Signing keystore | Custom path | Release builds only | Required for release |
 
 ## Troubleshooting
@@ -208,7 +192,6 @@ chmod +x gradlew
 
 Key dependencies used:
 - Firebase Authentication & Firestore
-- Google Play Services Ads
 - AndroidX libraries
 - ZXing (QR code scanning)
 - Material Design Components
