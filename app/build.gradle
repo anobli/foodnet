@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "net.gordios.qristal"
         minSdkVersion 23
-        targetSdk 33
+        targetSdk 35
         versionCode 4
         versionName "1.03"
 
