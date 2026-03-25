@@ -1,0 +1,94 @@
+<svg width="432" height="432" viewBox="0 0 432 432" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Android Adaptive Icon — 432x432px canvas
+    - Foreground safe zone: centre circle of diameter 264px (radius 132) — content here is always visible
+    - Background fills the full 432x432 circle
+    - The OS applies a circular mask (radius 216) so corners are clipped
+  -->
+  <defs>
+    <linearGradient id="iconBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#388E3C"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </linearGradient>
+    <linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#A5D6A7"/>
+      <stop offset="100%" stop-color="#66BB6A"/>
+    </linearGradient>
+    <linearGradient id="tagG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.97"/>
+      <stop offset="100%" stop-color="#f1f8e9" stop-opacity="0.93"/>
+    </linearGradient>
+    <!-- Circular mask simulating Android OS clip -->
+    <clipPath id="androidCircle">
+      <circle cx="216" cy="216" r="216"/>
+    </clipPath>
+  </defs>
+
+  <!-- Full circular background -->
+  <circle cx="216" cy="216" r="216" fill="url(#iconBg)"/>
+
+  <!-- Subtle inner ring -->
+  <circle cx="216" cy="216" r="208" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="2"/>
+
+  <!-- All foreground content clipped to circle -->
+  <g clip-path="url(#androidCircle)">
+
+    <!-- QR corner brackets — scaled and centred for 432x432 -->
+    <!-- Top-left -->
+    <rect x="46" y="46" width="86" height="86" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="4.5"/>
+    <rect x="61" y="61" width="56" height="56" rx="7" fill="#ffffff" fill-opacity="0.88"/>
+    <rect x="73" y="73" width="32" height="32" rx="5" fill="#2E7D32"/>
+
+    <!-- Top-right -->
+    <rect x="300" y="46" width="86" height="86" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="4.5"/>
+    <rect x="315" y="61" width="56" height="56" rx="7" fill="#ffffff" fill-opacity="0.88"/>
+    <rect x="327" y="73" width="32" height="32" rx="5" fill="#2E7D32"/>
+
+    <!-- Bottom-left -->
+    <rect x="46" y="300" width="86" height="86" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="4.5"/>
+    <rect x="61" y="315" width="56" height="56" rx="7" fill="#ffffff" fill-opacity="0.88"/>
+    <rect x="73" y="327" width="32" height="32" rx="5" fill="#2E7D32"/>
+
+    <!-- QR data dots — Bottom-right -->
+    <rect x="308" y="308" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="328" y="308" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="348" y="308" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="308" y="328" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="348" y="328" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="328" y="348" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+    <rect x="348" y="348" width="13" height="13" rx="3.5" fill="#ffffff" fill-opacity="0.45"/>
+
+    <!-- ── Central TAG — safe zone centred at 216,216 ── -->
+    <!-- Tag body: 180x210, centred -->
+    <rect x="126" y="108" width="180" height="210" rx="18" fill="url(#tagG)"/>
+
+    <!-- Tag hole -->
+    <circle cx="216" cy="108" r="14" fill="url(#iconBg)"/>
+    <circle cx="216" cy="108" r="8" fill="url(#iconBg)" stroke="#ffffff" stroke-opacity="0.25" stroke-width="1.5"/>
+
+    <!-- Tag string loop -->
+    <path d="M216,94 Q216,68 195,56 Q174,44 168,64" fill="none" stroke="#81C784" stroke-width="3.5" stroke-linecap="round"/>
+
+    <!-- Content lines on tag -->
+    <rect x="148" y="140" width="136" height="10" rx="5" fill="#4CAF50" fill-opacity="0.9"/>
+    <rect x="148" y="162" width="96" height="8" rx="4" fill="#81C784" fill-opacity="0.65"/>
+    <rect x="148" y="180" width="112" height="8" rx="4" fill="#81C784" fill-opacity="0.65"/>
+
+    <!-- Divider -->
+    <line x1="140" y1="200" x2="292" y2="200" stroke="#C8E6C9" stroke-width="1.5"/>
+
+    <!-- Clock icon -->
+    <circle cx="156" cy="222" r="13" fill="#E8F5E9"/>
+    <line x1="156" y1="213" x2="156" y2="222" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="156" y1="222" x2="163" y2="226" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="178" y="216" width="96" height="7" rx="3.5" fill="#A5D6A7" fill-opacity="0.7"/>
+    <rect x="178" y="230" width="68" height="7" rx="3.5" fill="#A5D6A7" fill-opacity="0.5"/>
+
+    <!-- Leaf motif -->
+    <path d="M192,294 C196,266 238,249 252,263 C244,291 216,301 192,294 Z" fill="url(#leafG)" fill-opacity="0.92"/>
+    <path d="M192,294 Q222,270 252,263" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="192" y1="294" x2="190" y2="308" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
+
+  </g>
+
+</svg>
