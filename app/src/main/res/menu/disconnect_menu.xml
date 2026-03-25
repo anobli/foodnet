@@ -24,4 +24,8 @@
         android:icon="@drawable/ic_account_multiple_plus_black_24dp"
         android:title="@string/group"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/delete_account"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/delete_account"
+        app:showAsAction="never" />
 </menu>

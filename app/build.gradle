@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "ovh.bailon.foodnet2"
+    namespace "net.gordios.qristal"
     compileSdk 36
 
     defaultConfig {
-        applicationId "ovh.bailon.foodnet2"
+        applicationId "net.gordios.qristal"
         minSdkVersion 23
         targetSdk 33
         versionCode 4
