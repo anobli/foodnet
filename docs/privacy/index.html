@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodNet - Privacy Policy / Politique de Confidentialité</title>
+    <script>
+        // Detect browser language and redirect
+        function detectLanguageAndRedirect() {
+            // Get browser language (e.g., "fr-FR", "en-US")
+            const userLang = navigator.language || navigator.userLanguage;
+
+            // Extract the main language code (e.g., "fr" from "fr-FR")
+            const langCode = userLang.split('-')[0].toLowerCase();
+
+            // Check if there's a language parameter in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+
+            if (langParam) {
+                // If language is specified in URL, use it
+                if (langParam.toLowerCase() === 'fr') {
+                    window.location.href = 'privacy-policy-fr.html';
+                } else {
+                    window.location.href = 'privacy-policy-en.html';
+                }
+            } else if (langCode === 'fr') {
+                // Redirect to French version
+                window.location.href = 'privacy-policy-fr.html';
+            } else {
+                // Default to English version
+                window.location.href = 'privacy-policy-en.html';
+            }
+        }
+
+        // Redirect immediately when page loads
+        detectLanguageAndRedirect();
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 40px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .manual-links {
+            margin-top: 40px;
+        }
+        .manual-links a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .manual-links a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <p>Redirecting to the privacy policy... / Redirection vers la politique de confidentialité...</p>
+
+    <div class="manual-links">
+        <p>If you are not redirected automatically:<br>Si vous n'êtes pas redirigé automatiquement:</p>
+        <a href="privacy-policy-en.html">English Privacy Policy</a>
+        <a href="privacy-policy-fr.html">Politique de Confidentialité (Français)</a>
+    </div>
+</body>
+</html>
