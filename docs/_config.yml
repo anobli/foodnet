@@ -1,0 +1,15 @@
+# Jekyll configuration for FoodNet privacy policy
+title: FoodNet Privacy Policy
+description: Privacy policy for FoodNet food management application
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+theme: null
+
+# Exclude files from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
