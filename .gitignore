@@ -12,3 +12,8 @@
 /captures
 .externalNativeBuild
 .cxx
+
+# Firebase configuration (contains sensitive data)
+google-services.json
+app/google-services.json
+app/src/google-services.json
