@@ -7,8 +7,8 @@ android {
     defaultConfig {
         applicationId "net.gordios.qristal"
         minSdkVersion 23
-        targetSdk 33
-        versionCode 4
+        targetSdk 35
+        versionCode 5
         versionName "1.03"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
