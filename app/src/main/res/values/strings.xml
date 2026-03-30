@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FoodNet</string>
+    <string name="app_name">Qristal</string>
     <string name="food">Food</string>
     <string name="expDate">Expiration Date</string>
     <string name="prodDate">Production Date</string>
@@ -9,7 +9,7 @@
     <string name="prodDateHint">Production date</string>
     <string name="expDateHint">Expiration date</string>
     <string name="openingDateHint">Opening date</string>
-    <string name="channel_name">FoodNet</string>
+    <string name="channel_name">Qristal</string>
     <string name="channel_description">Notify the user about food reaching expiration</string>
     <string name="notification_title">Your food is going to expire</string>
     <string name="notification_content">The food named %s is going to expire soon</string>
