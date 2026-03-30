@@ -15,6 +15,8 @@
 
 package net.gordios.qristal.db;
 
+import java.util.ArrayList;
+
 import net.gordios.qristal.OnDataEventListener;
 import net.gordios.qristal.OpenDating;
 
@@ -27,9 +29,13 @@ public interface IFoodnetDBHelper {
 
     void requestGetAll(int location);
 
+    ArrayList<OpenDating> getAll();
+
     int update(OpenDating openDating);
 
     void delete(OpenDating openDating);
+
+    void deleteAll();
 
     void registerOnDataChange(OnDataEventListener listener);
 }
