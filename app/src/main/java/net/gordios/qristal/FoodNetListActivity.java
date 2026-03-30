@@ -119,14 +119,7 @@ public class FoodNetListActivity extends AppCompatActivity
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         if (user != null) {
                             invalidateOptionsMenu();
-                            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
-                            String group = sharedPreferences.getString("group", user.getUid());
-                            db = new FirestoreDBHelper(this, group);
-                            db.registerOnDataChange(this);
-                            // Ensure the group document exists so the user can be found
-                            // by findGroupsForUser (e.g. for GDPR account deletion).
-                            new FirestoreGroup().ensureGroupExists(user.getUid());
-                            requestGetAll();
+                            syncLocalToFirebase(user);
                         }
                     }
                 });
@@ -154,6 +147,56 @@ public class FoodNetListActivity extends AppCompatActivity
 
         ImageButton scan_qr = findViewById(R.id.scan_qr);
         scan_qr.setOnClickListener(this);
+    }
+
+    private void syncLocalToFirebase(FirebaseUser user) {
+        SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+        String group = sharedPreferences.getString("group", user.getUid());
+        
+        IFoodnetDBHelper localDb = new FoodnetDBHelper(this);
+        ArrayList<OpenDating> localData = localDb.getAll();
+        
+        IFoodnetDBHelper firestoreDb = new FirestoreDBHelper(this, group);
+        for (OpenDating item : localData) {
+            firestoreDb.add(item);
+        }
+        
+        localDb.deleteAll();
+        
+        db = firestoreDb;
+        db.registerOnDataChange(this);
+        new FirestoreGroup().ensureGroupExists(user.getUid());
+        requestGetAll();
+    }
+
+    private void syncFirebaseToLocal() {
+        if (!(db instanceof FirestoreDBHelper)) return;
+
+        db.registerOnDataChange(new OnDataEventListener() {
+            @Override
+            public void onGetAllReady(ArrayList<OpenDating> list) {
+                IFoodnetDBHelper localDb = new FoodnetDBHelper(FoodNetListActivity.this);
+                localDb.deleteAll();
+                for (OpenDating item : list) {
+                    localDb.add(item);
+                }
+                
+                AuthUI.getInstance()
+                        .signOut(FoodNetListActivity.this)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            public void onComplete(@NonNull Task<Void> task) {
+                                invalidateOptionsMenu();
+                                db = localDb;
+                                db.registerOnDataChange(FoodNetListActivity.this);
+                                requestGetAll();
+                            }
+                        });
+            }
+
+            @Override
+            public void onGetReady(OpenDating openDating) {}
+        });
+        db.requestGetAll();
     }
 
     private void requestGetAll() {
@@ -232,16 +275,7 @@ public class FoodNetListActivity extends AppCompatActivity
                             .build());
             return true;
         } else if (item.getItemId() == R.id.disconnect) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        public void onComplete(@NonNull Task<Void> task) {
-                            invalidateOptionsMenu();
-                            db = new FoodnetDBHelper(FoodNetListActivity.this);
-                            db.registerOnDataChange(FoodNetListActivity.this);
-                            requestGetAll();
-                        }
-                    });
+            syncFirebaseToLocal();
             return true;
         } else if (item.getItemId() == R.id.group) {
             Intent intent = new Intent(this, InviteActivity.class);

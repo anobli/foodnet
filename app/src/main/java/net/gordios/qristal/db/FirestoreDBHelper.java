@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,6 +154,13 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                 });
     }
 
+    @Override
+    public ArrayList<OpenDating> getAll() {
+        // This is not supported synchronously for Firestore.
+        // Use requestGetAll instead.
+        return new ArrayList<>();
+    }
+
     public int update(OpenDating openDating) {
         add(openDating);
         return 0;
@@ -180,6 +188,25 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                             listener.onGetAllReady(list);
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void deleteAll() {
+        db.collection("Foods")
+                .whereEqualTo(COLUMN_GROUP, group_id)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            WriteBatch batch = db.batch();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                batch.delete(document.getReference());
+                            }
+                            batch.commit();
                         }
                     }
                 });

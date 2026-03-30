@@ -120,7 +120,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         if (cursor.moveToFirst()) {
             do {
                 OpenDating openingDate = new OpenDating(
-                        Integer.parseInt(cursor.getString(0)),
+                        Long.parseLong(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2),
                         cursor.getString(3), cursor.getString(4),
                         cursor.getString(5), locale);
@@ -172,7 +172,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         return true;
     }
 
-    private ArrayList<OpenDating> getAll() {
+    @Override
+    public ArrayList<OpenDating> getAll() {
         ArrayList<OpenDating> noteList = new ArrayList<OpenDating>();
         String selectQuery = "SELECT  * FROM " + TABLE_NOTE;
 
@@ -182,7 +183,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         if (cursor.moveToFirst()) {
             do {
                 OpenDating openingDate = new OpenDating(
-                        Integer.parseInt(cursor.getString(0)),
+                        Long.parseLong(cursor.getString(0)),
                         cursor.getString(1), cursor.getString(2),
                         cursor.getString(3), cursor.getString(4),
                         cursor.getString(5), locale);
@@ -231,6 +232,13 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
             requestGetAll(lastRequestedLocatation);
         else
             requestGetAll();
+    }
+
+    @Override
+    public void deleteAll() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NOTE, null, null);
+        db.close();
     }
 
     @Override
