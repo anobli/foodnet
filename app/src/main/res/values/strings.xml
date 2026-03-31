@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FoodNet</string>
+    <string name="app_name">Qristal</string>
     <string name="food">Food</string>
     <string name="expDate">Expiration Date</string>
     <string name="prodDate">Production Date</string>
@@ -9,7 +9,7 @@
     <string name="prodDateHint">Production date</string>
     <string name="expDateHint">Expiration date</string>
     <string name="openingDateHint">Opening date</string>
-    <string name="channel_name">FoodNet</string>
+    <string name="channel_name">Qristal</string>
     <string name="channel_description">Notify the user about food reaching expiration</string>
     <string name="notification_title">Your food is going to expire</string>
     <string name="notification_content">The food named %s is going to expire soon</string>
@@ -31,4 +31,13 @@
     <string name="qr_code_image_content_desc">QR code for group invitation</string>
     <string name="location_icon_content_desc">Storage location icon</string>
     <string name="date_field_content_desc">Date field</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_title">Delete Account Permanently?</string>
+    <string name="delete_account_message">This will permanently delete your account, remove you from all groups, and delete all your data. This action cannot be undone.</string>
+    <string name="delete_account_confirm">Delete Forever</string>
+    <string name="delete_account_cancel">Cancel</string>
+    <string name="delete_account_progress">Deleting account data…</string>
+    <string name="delete_account_success">Account deleted successfully</string>
+    <string name="delete_account_error">Failed to delete account: %s</string>
+    <string name="delete_account_auth_required">Please sign in again to delete your account</string>
 </resources>
