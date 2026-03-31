@@ -29,6 +29,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import net.gordios.qristal.db.IFoodnetDBHelper;
 
@@ -52,10 +53,13 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
             .inflate(R.layout.item_food_net, parent, false);
         }
 
+        TextView label = (TextView) convertView.findViewById(R.id.label);
         TextView name = (TextView) convertView.findViewById(R.id.food);
         TextView date = (TextView) convertView.findViewById(R.id.date);
         ConstraintLayout layout = (ConstraintLayout) convertView.findViewById(R.id.layout);
 
+        String labelStr = String.format(Locale.US, "%05X", openDating.getID() & 0xFFFFF);
+        label.setText(labelStr);
         name.setText(openDating.getFood());
         date.setText(openDating.getExpDate());
 
