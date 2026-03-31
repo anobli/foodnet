@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,6 +56,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import net.gordios.qristal.db.FirestoreDBHelper;
 import net.gordios.qristal.db.FirestoreGroup;
@@ -77,6 +79,7 @@ public class FoodNetListActivity extends AppCompatActivity
     private static final int QR_CODE_RESULT = 0;
     private ActivityResultLauncher<Intent> qrCodeScanLauncher;
     private ActivityResultLauncher<Intent> signInLauncher;
+    private ActivityResultLauncher<String[]> requestPermissionsLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,22 +127,30 @@ public class FoodNetListActivity extends AppCompatActivity
                     }
                 });
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityResultLauncher<String> request = registerForActivityResult(
-                    new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
-                        @Override
-                        public void onActivityResult(Boolean isGranted) {
-                            if (!isGranted) {
-                                Toast toast = Toast.makeText(FoodNetListActivity.this, R.string.camera_permission_denied, Toast.LENGTH_LONG);
-                                toast.show();
+        requestPermissionsLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                    Boolean cameraGranted = result.get(Manifest.permission.CAMERA);
+                    if (cameraGranted != null && !cameraGranted) {
+                        Toast.makeText(this, R.string.camera_permission_denied, Toast.LENGTH_LONG).show();
+                        ImageButton qr_scan_btn = findViewById(R.id.scan_qr);
+                        qr_scan_btn.setEnabled(false);
+                        qr_scan_btn.setVisibility(ImageButton.INVISIBLE);
+                    }
+                });
 
-                                ImageButton qr_scan_btn = (ImageButton) findViewById(R.id.scan_qr);
-                                qr_scan_btn.setEnabled(false);
-                                qr_scan_btn.setVisibility(ImageButton.INVISIBLE);
-                            }
-                        }
-                    });
-            request.launch(Manifest.permission.CAMERA);
+        List<String> permissionsToRequest = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionsToRequest.add(Manifest.permission.CAMERA);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+
+        if (!permissionsToRequest.isEmpty()) {
+            requestPermissionsLauncher.launch(permissionsToRequest.toArray(new String[0]));
         }
 
         ImageButton print_qr = findViewById(R.id.print_qr);
