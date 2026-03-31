@@ -221,15 +221,17 @@ public class OpenDating {
     }
 
     public void scheduleNotifications(Context context) {
-        if (hashMap.get(EXP_DATE) == null || hashMap.get(EXP_DATE).length() > 0)
+        if (hashMap.get(EXP_DATE) == null || hashMap.get(EXP_DATE).isEmpty())
             return;
 
         try {
             Date expDate = df.parse(hashMap.get(EXP_DATE));
-            String food = hashMap.get(FOOD);
-            FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
+            if (expDate != null) {
+                String food = hashMap.get(FOOD);
+                FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
+            }
         } catch (ParseException ex) {
-            return;
+            // ignore
         }
     }
 
