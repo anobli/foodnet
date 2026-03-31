@@ -17,6 +17,8 @@ package net.gordios.qristal.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 
 import com.google.zxing.BarcodeFormat;
@@ -61,21 +63,34 @@ public class QrCodeGenerator {
         Random random = new Random();
         int sn;
 
-//        do {
         sn = random.nextInt(Integer.MAX_VALUE);
-//        } while (db.openDatingExists(sn));
+        String idStr = String.format(Locale.US, "%010d", sn);
+        String label = String.format(Locale.US, "%05X", sn & 0xFFFFF);
 
         builder.clearQuery();
-        builder.appendQueryParameter("id", String.format(Locale.US, "%010d", sn));
+        builder.appendQueryParameter("id", idStr);
         Uri uri = builder.build();
 
         String text = uri.toString();
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE,200,200);
+            BitMatrix bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            return bitmap;
+            Bitmap qrBitmap = barcodeEncoder.createBitmap(bitMatrix);
+            
+            // Add label to the bitmap
+            Bitmap result = Bitmap.createBitmap(qrBitmap.getWidth(), qrBitmap.getHeight() + 40, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(result);
+            canvas.drawColor(Color.WHITE);
+            canvas.drawBitmap(qrBitmap, 0, 0, null);
+            
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(30);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText(label, qrBitmap.getWidth() / 2f, qrBitmap.getHeight() + 30, paint);
+            
+            return result;
         } catch (WriterException e) {
             e.printStackTrace();
         }
