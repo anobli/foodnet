@@ -1,0 +1,121 @@
+<!--
+  ~ Copyright (C) 2020 Alexandre Bailon
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under the terms of the
+  ~ GNU General Public License as published by the Free Software Foundation; either version 2 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  ~ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  ~ PURPOSE. See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program;
+  ~ If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="680"
+    android:viewportHeight="680">
+    <!-- Background Rounded Rect -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M148,0 L532,0 C613.74,0 680,66.26 680,148 L680,532 C680,613.74 613.74,680 532,680 L148,680 C66.26,680 0,613.74 0,532 L0,148 C0,66.26 66.26,0 148,0 Z" />
+
+    <!-- Printer Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#81C784"
+        android:strokeWidth="2"
+        android:pathData="M214,248 h252 a22,22 0 0 1 22,22 v142 a22,22 0 0 1 -22,22 h-252 a22,22 0 0 1 -22,-22 v-142 a22,22 0 0 1 22,-22 z" />
+
+    <!-- Printer Top Paper Tray -->
+    <path
+        android:fillColor="#E8F5E9"
+        android:strokeColor="#81C784"
+        android:strokeWidth="2"
+        android:pathData="M234,200 h212 a14,14 0 0 1 14,14 v50 a14,14 0 0 1 -14,14 h-212 a14,14 0 0 1 -14,-14 v-50 a14,14 0 0 1 14,-14 z" />
+
+    <!-- Tray Detail Line -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M245,210 h190 a5,5 0 0 1 5,5 v4 a5,5 0 0 1 -5,5 h-190 a5,5 0 0 1 -5,-5 v-4 a5,5 0 0 1 5,-5 z" />
+
+    <!-- Indicator Light -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M432,278 m-9,0 a9,9 0 1 1 18,0 a9,9 0 1 1 -18,0" />
+
+    <!-- Printer Buttons -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M216,268 h20 a9,9 0 0 1 9,9 v0 a9,9 0 0 1 -9,9 h-20 a9,9 0 0 1 -9,-9 v0 a9,9 0 0 1 9,-9 z" />
+
+    <!-- Vents/Detail Lines -->
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M370,298 L370,368" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M388,298 L388,368" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M406,298 L406,368" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M424,298 L424,368" />
+
+    <!-- Emerging Paper -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#81C784"
+        android:strokeWidth="3"
+        android:pathData="M256,388 h168 a10,10 0 0 1 10,10 v200 a10,10 0 0 1 -10,10 h-168 a10,10 0 0 1 -10,-10 v-200 a10,10 0 0 1 10,-10 z" />
+
+    <!-- Slot Detail -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M275,388 h130 a5,5 0 0 1 5,5 v6 a5,5 0 0 1 -5,5 h-130 a5,5 0 0 1 -5,-5 v-6 a5,5 0 0 1 5,-5 z" />
+
+    <!-- QR Code on Paper -->
+    <!-- Top-Left -->
+    <path android:fillColor="#1B5E20" android:pathData="M268,406 h42 a5,5 0 0 1 5,5 v42 a5,5 0 0 1 -5,5 h-42 a5,5 0 0 1 -5,-5 v-42 a5,5 0 0 1 5,-5 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M273,413 h32 a3,3 0 0 1 3,3 v32 a3,3 0 0 1 -3,3 h-32 a3,3 0 0 1 -3,-3 v-32 a3,3 0 0 1 3,-3 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M278,420 h22 a1,1 0 0 1 1,1 v22 a1,1 0 0 1 -1,1 h-22 a1,1 0 0 1 -1,-1 v-22 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M283,426 h12 v12 h-12 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M285,428 h8 v8 h-8 z" />
+
+    <!-- Top-Right -->
+    <path android:fillColor="#1B5E20" android:pathData="M370,406 h42 a5,5 0 0 1 5,5 v42 a5,5 0 0 1 -5,5 h-42 a5,5 0 0 1 -5,-5 v-42 a5,5 0 0 1 5,-5 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M375,413 h32 a3,3 0 0 1 3,3 v32 a3,3 0 0 1 -3,3 h-32 a3,3 0 0 1 -3,-3 v-32 a3,3 0 0 1 3,-3 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M380,420 h22 a1,1 0 0 1 1,1 v22 a1,1 0 0 1 -1,1 h-22 a1,1 0 0 1 -1,-1 v-22 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M385,426 h12 v12 h-12 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M387,428 h8 v8 h-8 z" />
+
+    <!-- Bottom-Left -->
+    <path android:fillColor="#1B5E20" android:pathData="M268,508 h42 a5,5 0 0 1 5,5 v42 a5,5 0 0 1 -5,5 h-42 a5,5 0 0 1 -5,-5 v-42 a5,5 0 0 1 5,-5 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M273,515 h32 a3,3 0 0 1 3,3 v32 a3,3 0 0 1 -3,3 h-32 a3,3 0 0 1 -3,-3 v-32 a3,3 0 0 1 3,-3 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M278,522 h22 a1,1 0 0 1 1,1 v22 a1,1 0 0 1 -1,1 h-22 a1,1 0 0 1 -1,-1 v-22 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M283,528 h12 v12 h-12 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M285,530 h8 v8 h-8 z" />
+
+    <!-- Pattern squares -->
+    <path android:fillColor="#1B5E20" android:pathData="M327,410 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M339,410 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M351,410 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M327,422 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M351,422 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M339,434 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M351,434 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M327,434 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M327,474 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M339,474 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M351,486 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M363,474 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M375,486 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M387,474 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M399,474 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M399,486 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M387,498 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M363,498 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M375,510 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M399,510 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M327,514 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M339,526 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M351,514 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M363,526 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+    <path android:fillColor="#1B5E20" android:pathData="M375,514 h8 a1,1 0 0 1 1,1 v6 a1,1 0 0 1 -1,1 h-8 a1,1 0 0 1 -1,-1 v-6 a1,1 0 0 1 1,-1 z" />
+</vector>
