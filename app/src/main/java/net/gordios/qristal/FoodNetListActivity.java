@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +50,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
@@ -156,8 +158,49 @@ public class FoodNetListActivity extends AppCompatActivity
         ImageButton print_qr = findViewById(R.id.print_qr);
         print_qr.setOnClickListener(this);
 
+        ImageButton custom_qr = findViewById(R.id.custom_qr);
+        custom_qr.setOnClickListener(this);
+
         ImageButton scan_qr = findViewById(R.id.scan_qr);
         scan_qr.setOnClickListener(this);
+    }
+
+    private void showCustomQrWizard(final List<String> labels) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.custom_qr_add_title, labels.size() + 1));
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_custom_qr, null);
+        final TextInputEditText input = view.findViewById(R.id.custom_label_edit);
+        builder.setView(view);
+
+        builder.setPositiveButton(R.string.custom_qr_add_next, (dialog, which) -> {
+            String label = input.getText().toString().toUpperCase().trim();
+            if (!label.isEmpty()) {
+                labels.add(label);
+                showCustomQrWizard(labels);
+            }
+        });
+        
+        builder.setNeutralButton(R.string.custom_qr_finish_print, (dialog, which) -> {
+            String label = input.getText().toString().toUpperCase().trim();
+            if (!label.isEmpty()) {
+                labels.add(label);
+            }
+            if (!labels.isEmpty()) {
+                printCustomLabels(labels);
+            }
+        });
+
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    private void printCustomLabels(List<String> labels) {
+        Uri.Builder uriBuilder = new Uri.Builder();
+        uriBuilder.scheme("foodnet").authority("foodnet.bailon.ovh");
+        Bitmap sheet = QrCodeGenerator.createCustomQrCodeSheet(uriBuilder, labels, 4);
+        PrintHelper photoPrinter = new PrintHelper(this);
+        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+        photoPrinter.printBitmap(getString(R.string.custom_qr_print_job), sheet);
     }
 
     private void syncLocalToFirebase(FirebaseUser user) {
@@ -233,6 +276,8 @@ public class FoodNetListActivity extends AppCompatActivity
             PrintHelper photoPrinter = new PrintHelper(this);
             photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
             photoPrinter.printBitmap("QR code", sheet);
+        } else if (v.getId() == R.id.custom_qr) {
+            showCustomQrWizard(new ArrayList<>());
         } else if(v.getId() == R.id.scan_qr) {
                 Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
                 qrCodeScanLauncher.launch(intent);

@@ -1,0 +1,118 @@
+<!--
+  ~ Copyright (C) 2020 Alexandre Bailon
+  ~
+  ~ This program is free software; you can redistribute it and/or modify it under the terms of the
+  ~ GNU General Public License as published by the Free Software Foundation; either version 2 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  ~ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  ~ PURPOSE. See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with this program;
+  ~ If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="680"
+    android:viewportHeight="680">
+    <!-- Background Rounded Rect -->
+    <path
+        android:fillColor="#2E7D32"
+        android:pathData="M148,0h384a148,148 0,0 1 148,148v384a148,148 0,0 1 -148,148h-384a148,148 0,0 1 -148,-148v-384a148,148 0,0 1 148,-148z" />
+
+    <!-- Printer Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#81C784"
+        android:strokeWidth="2"
+        android:pathData="M192,210h296a22,22 0,0 1 22,22v166a22,22 0,0 1 -22,22h-296a22,22 0,0 1 -22,-22v-166a22,22 0,0 1 22,-22z" />
+
+    <!-- Printer Top Paper Tray -->
+    <path
+        android:fillColor="#E8F5E9"
+        android:strokeColor="#81C784"
+        android:strokeWidth="2"
+        android:pathData="M222,168h236a14,14 0,0 1 14,14v66a14,14 0,0 1 -14,14h-236a14,14 0,0 1 -14,-14v-66a14,14 0,0 1 14,-14z" />
+
+    <!-- Tray Detail Line -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M242,178h196a5,5 0,0 1 5,5v13a5,5 0,0 1 -5,5h-196a5,5 0,0 1 -5,-5v-13a5,5 0,0 1 5,-5z" />
+
+    <!-- Indicator Light -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M436,244m-9,0a9,9 0,1 1 18,0a9,9 0,1 1 -18,0" />
+
+    <!-- Printer Buttons -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M207,234h38a9,9 0,0 1 9,9v18a9,9 0,0 1 -9,9h-38a9,9 0,0 1 -9,-9v-18a9,9 0,0 1 9,-9z" />
+
+    <!-- Vents/Detail Lines -->
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M368,262v64" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M386,262v64" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M404,262v64" />
+    <path android:strokeColor="#C8E6C9" android:strokeWidth="3" android:pathData="M422,262v64" />
+
+    <!-- Slot Detail -->
+    <path
+        android:fillColor="#81C784"
+        android:pathData="M262,334h156a5,5 0,0 1 5,5v14a5,5 0,0 1 -5,5h-156a5,5 0,0 1 -5,-5v-14a5,5 0,0 1 5,-5z" />
+
+    <!-- Emerging Paper -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#81C784"
+        android:strokeWidth="3"
+        android:pathData="M234,340h212a10,10 0,0 1 10,10v282a10,10 0,0 1 -10,10h-212a10,10 0,0 1 -10,-10v-282a10,10 0,0 1 10,-10z" />
+
+    <!-- QR Code on Paper (Top Left) -->
+    <path android:fillColor="#1B5E20" android:pathData="M254,358h44a4,4 0,0 1 4,4v44a4,4 0,0 1 -4,4h-44a4,4 0,0 1 -4,-4v-44a4,4 0,0 1 4,-4z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M260,364h32a2,2 0,0 1 2,2v32a2,2 0,0 1 -2,2h-32a2,2 0,0 1 -2,-2v-32a2,2 0,0 1 2,-2z" />
+    <path android:fillColor="#1B5E20" android:pathData="M266,370h20a1,1 0,0 1 1,1v20a1,1 0,0 1 -1,1h-20a1,1 0,0 1 -1,-1v-20a1,1 0,0 1 1,-1z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M271,375h10v10h-10z" />
+    <path android:fillColor="#1B5E20" android:pathData="M273,377h6v6h-6z" />
+
+    <!-- QR Code on Paper (Top Right) -->
+    <path android:fillColor="#1B5E20" android:pathData="M382,358h44a4,4 0,0 1 4,4v44a4,4 0,0 1 -4,4h-44a4,4 0,0 1 -4,-4v-44a4,4 0,0 1 4,-4z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M388,364h32a2,2 0,0 1 2,2v32a2,2 0,0 1 -2,2h-32a2,2 0,0 1 -2,-2v-32a2,2 0,0 1 2,-2z" />
+    <path android:fillColor="#1B5E20" android:pathData="M394,370h20a1,1 0,0 1 1,1v20a1,1 0,0 1 -1,1h-20a1,1 0,0 1 -1,-1v-20a1,1 0,0 1 1,-1z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M399,375h10v10h-10z" />
+    <path android:fillColor="#1B5E20" android:pathData="M401,377h6v6h-6z" />
+
+    <!-- QR Code on Paper (Bottom Left) -->
+    <path android:fillColor="#1B5E20" android:pathData="M254,458h44a4,4 0,0 1 4,4v44a4,4 0,0 1 -4,4h-44a4,4 0,0 1 -4,-4v-44a4,4 0,0 1 4,-4z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M260,464h32a2,2 0,0 1 2,2v32a2,2 0,0 1 -2,2h-32a2,2 0,0 1 -2,-2v-32a2,2 0,0 1 2,-2z" />
+    <path android:fillColor="#1B5E20" android:pathData="M266,470h20a1,1 0,0 1 1,1v20a1,1 0,0 1 -1,1h-20a1,1 0,0 1 -1,-1v-20a1,1 0,0 1 1,-1z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M271,475h10v10h-10z" />
+    <path android:fillColor="#1B5E20" android:pathData="M273,477h6v6h-6z" />
+
+    <!-- Tiny QR Details -->
+    <path android:fillColor="#1B5E20" android:pathData="M312,362h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M323,362h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M334,362h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M312,374h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M334,374h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M323,386h7v7h-7z" />
+
+    <path android:fillColor="#1B5E20" android:pathData="M312,462h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M323,462h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M334,462h7v7h-7z" />
+    <path android:fillColor="#1B5E20" android:pathData="M312,474h7v7h-7z" />
+
+    <!-- PASTA word recreated with paths -->
+    <!-- P -->
+    <path android:fillColor="#2E7D32" android:pathData="M280,540h12a8,8 0,0 1 0,16h-12zM280,540v30h4v-10h8a12,12 0,0 0 0,-24z" />
+    <!-- A -->
+    <path android:fillColor="#2E7D32" android:pathData="M315,540l-10,30h4l2,-6h12l2,6h4l-10,-30zM313,560l4,-12l4,12z" />
+    <!-- S -->
+    <path android:fillColor="#2E7D32" android:pathData="M345,548a6,6 0,0 1 12,0v2h4v-2a10,10 0,0 0 -20,0q0,8 10,10a6,6 0,0 1 0,12h-2a6,6 0,0 1 -6,-6v-2h-4v2a10,10 0,0 0 20,0q0,-8 -10,-10a6,6 0,0 1 0,-12z" />
+    <!-- T -->
+    <path android:fillColor="#2E7D32" android:pathData="M370,540h20v4h-8v26h-4v-26h-8z" />
+    <!-- A -->
+    <path android:fillColor="#2E7D32" android:pathData="M410,540l-10,30h4l2,-6h12l2,6h4l-10,-30zM408,560l4,-12l4,12z" />
+</vector>

@@ -27,6 +27,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -59,16 +61,19 @@ public class QrCodeGenerator {
         return bitmap;
     }
 
-    private static Bitmap createQrCode(Uri.Builder builder) {
+    private static Bitmap createQrCode(Uri.Builder builder, String customLabel) {
         Random random = new Random();
         int sn;
 
         sn = random.nextInt(Integer.MAX_VALUE);
         String idStr = String.format(Locale.US, "%010d", sn);
-        String label = String.format(Locale.US, "%05X", sn & 0xFFFFF);
+        String label = customLabel != null ? customLabel : String.format(Locale.US, "%05X", sn & 0xFFFFF);
 
         builder.clearQuery();
         builder.appendQueryParameter("id", idStr);
+        if (customLabel != null) {
+            builder.appendQueryParameter("label", customLabel);
+        }
         Uri uri = builder.build();
 
         String text = uri.toString();
@@ -98,21 +103,54 @@ public class QrCodeGenerator {
         return null;
     }
 
-    private static Bitmap createQrCodeLine(Uri.Builder builder, int cols) {
-        Bitmap line = createQrCode(builder);
-        for (int i = 1; i < cols; i++) {
-            Bitmap qr = createQrCode(builder);
-            line = appendImages(line, qr, false);
+    public static Bitmap createQrCodeSheet(Uri.Builder builder, int cols, int rows) {
+        Bitmap sheet = null;
+        for (int i = 0; i < rows; i++) {
+            Bitmap line = null;
+            for (int j = 0; j < cols; j++) {
+                Bitmap qr = createQrCode(builder, null);
+                if (line == null) line = qr;
+                else line = appendImages(line, qr, false);
+            }
+            if (sheet == null) sheet = line;
+            else sheet = appendImages(sheet, line, true);
         }
-
-        return line;
+        return sheet;
     }
 
-    public static Bitmap createQrCodeSheet(Uri.Builder builder, int cols, int rows) {
-        Bitmap sheet = createQrCodeLine(builder, cols);
-        for (int i = 1; i < rows; i++) {
-            Bitmap line = createQrCodeLine(builder, cols);
-            sheet = appendImages(sheet, line, true);
+    public static Bitmap createCustomQrCodeSheet(Uri.Builder builder, List<String> labels, int cols) {
+        Bitmap sheet = null;
+        Bitmap currentLine = null;
+        int colCount = 0;
+
+        for (String label : labels) {
+            Bitmap qr = createQrCode(builder, label);
+            if (currentLine == null) {
+                currentLine = qr;
+            } else {
+                currentLine = appendImages(currentLine, qr, false);
+            }
+            colCount++;
+
+            if (colCount == cols) {
+                if (sheet == null) {
+                    sheet = currentLine;
+                } else {
+                    sheet = appendImages(sheet, currentLine, true);
+                }
+                currentLine = null;
+                colCount = 0;
+            }
+        }
+
+        // Add remaining QRs in the last line if any
+        if (currentLine != null) {
+            // Fill the rest of the line with empty space or just add it
+            if (sheet == null) {
+                sheet = currentLine;
+            } else {
+                sheet = appendImages(sheet, currentLine, true);
+            }
         }
 
         return sheet;

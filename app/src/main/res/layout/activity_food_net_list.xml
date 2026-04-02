@@ -70,6 +70,18 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
+        android:id="@+id/custom_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Create custom QR codes"
+        android:src="@drawable/ic_print_qr_pasta_custom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/print_qr" />
+
+    <ImageButton
         android:id="@+id/scan_qr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -79,6 +91,6 @@
         android:contentDescription="@string/scan_qr_content_desc"
         android:src="@drawable/ic_scan_qr_custom"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/print_qr" />
+        app:layout_constraintEnd_toStartOf="@+id/custom_qr" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
