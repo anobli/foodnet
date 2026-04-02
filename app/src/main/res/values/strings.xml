@@ -40,4 +40,11 @@
     <string name="delete_account_success">Account deleted successfully</string>
     <string name="delete_account_error">Failed to delete account: %s</string>
     <string name="delete_account_auth_required">Please sign in again to delete your account</string>
+    <string name="custom_qr_title">Create Custom QR Codes</string>
+    <string name="custom_qr_add_title">Add Custom Label (%d)</string>
+    <string name="custom_qr_hint">Custom Label (e.g. PASTA)</string>
+    <string name="custom_qr_add_next">Add Next</string>
+    <string name="custom_qr_finish_print">Finish &amp; Print</string>
+    <string name="custom_qr_print_job">Custom QR Codes</string>
+    <string name="custom_qr_content_desc">Create custom QR codes</string>
 </resources>

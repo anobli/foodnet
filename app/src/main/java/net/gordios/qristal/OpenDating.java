@@ -35,6 +35,7 @@ public class OpenDating {
     public static final String EXP_DATE = "ExpDate";
     public static final String OPENING_DATE = "OpeningDate";
     public static final String LOCATION = "Location";
+    public static final String LABEL = "Label";
 
     public OpenDating(HashMap<String, String> hashMap) {
         this.hashMap = hashMap;
@@ -90,10 +91,11 @@ public class OpenDating {
         this.hashMap = new HashMap<>();
         for(Map.Entry<String, Object> entry : hashMap.entrySet()) {
             Object obj = entry.getValue();
-            if (obj.getClass() == String.class) {
-                this.hashMap.put(entry.getKey(), (String) entry.getValue());
-            } else if (obj.getClass() == Long.class) {
-                this.hashMap.put(entry.getKey(), Long.toString((long) entry.getValue()));
+            if (obj == null) continue;
+            if (obj instanceof String) {
+                this.hashMap.put(entry.getKey(), (String) obj);
+            } else if (obj instanceof Long) {
+                this.hashMap.put(entry.getKey(), Long.toString((long) obj));
             }
         }
         df = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
@@ -241,6 +243,10 @@ public class OpenDating {
 
     public String getLocation() {
         return hashMap.get(LOCATION);
+    }
+
+    public String getLabel() {
+        return hashMap.get(LABEL);
     }
 
     public HashMap<String, String> getHashMap() {

@@ -39,4 +39,11 @@
     <string name="fridge">Frigo</string>
     <string name="cupboard">Placard</string>
     <string name="all">Tout</string>
+    <string name="custom_qr_title">Créer des QR codes personnalisés</string>
+    <string name="custom_qr_add_title">Ajouter une étiquette (%d)</string>
+    <string name="custom_qr_hint">Étiquette personnalisée (ex: PATES)</string>
+    <string name="custom_qr_add_next">Ajouter suivant</string>
+    <string name="custom_qr_finish_print">Terminer &amp; Imprimer</string>
+    <string name="custom_qr_print_job">QR codes personnalisés</string>
+    <string name="custom_qr_content_desc">Créer des QR codes personnalisés</string>
 </resources>
