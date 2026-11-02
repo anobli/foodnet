@@ -36,6 +36,7 @@ public class OpenDating {
     public static final String OPENING_DATE = "OpeningDate";
     public static final String LOCATION = "Location";
     public static final String LABEL = "Label";
+    public static final String KCAL = "Kcal";
 
     public OpenDating(HashMap<String, String> hashMap) {
         this.hashMap = hashMap;
@@ -50,6 +51,20 @@ public class OpenDating {
                 } catch (ParseException e) {
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    protected boolean checkKcal() {
+        if (hashMap.containsKey(KCAL) && hashMap.get(KCAL) != null
+                && !((String) hashMap.get(KCAL)).isEmpty()) {
+            try {
+                if (Integer.parseInt(hashMap.get(KCAL)) < 0) {
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                return false;
             }
         }
         return true;
@@ -81,6 +96,10 @@ public class OpenDating {
         }
 
         if (!checkDate(PROD_DATE)) {
+            return false;
+        }
+
+        if (!checkKcal()) {
             return false;
         }
 
@@ -247,6 +266,20 @@ public class OpenDating {
 
     public String getLabel() {
         return hashMap.get(LABEL);
+    }
+
+    /**
+     * Return the nutritional energy of the food.
+     * @return The energy, in kilocalories (kcal), or an empty string if unset
+     */
+    public String getKcal() {
+        if (hashMap.get(KCAL) == null)
+            return "";
+        return hashMap.get(KCAL);
+    }
+
+    public void setKcal(String kcal) {
+        hashMap.put(KCAL, kcal);
     }
 
     public HashMap<String, String> getHashMap() {
