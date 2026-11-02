@@ -4,6 +4,8 @@
     <string name="expDate">Expiration Date</string>
     <string name="prodDate">Production Date</string>
     <string name="openingDate">Opening Date</string>
+    <string name="kcal">Calories (kcal)</string>
+    <string name="kcalHint">e.g. 250</string>
     <string name="save">Save</string>
     <string name="foodHint">Food name</string>
     <string name="prodDateHint">Production date</string>

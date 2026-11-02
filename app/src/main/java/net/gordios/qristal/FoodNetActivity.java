@@ -81,6 +81,7 @@ public class FoodNetActivity extends AppCompatActivity
         items.add("ProdDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.prodDate));
         items.add("ExpDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.expDate));
         items.add("OpeningDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.openingDate));
+        items.add("Kcal", new ListItemTextValue(this, R.layout.item_content_simple_number, R.string.kcal));
         items.add("Location", new ListItemSpinner(this, new LocationAdapter(this)));
         ArrayAdapter<ListItemBase> listViewAdapter = new ListItemAdapter(this, items.getUiList());
         listViewAdapter.notifyDataSetChanged();

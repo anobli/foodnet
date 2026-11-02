@@ -47,6 +47,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String COLUMN_EXP_DATE = OpenDating.EXP_DATE;
     private static final String COLUMN_OPENING_DATE = OpenDating.OPENING_DATE;
     private static final String COLUMN_LOCATION = OpenDating.LOCATION;
+    private static final String COLUMN_KCAL = OpenDating.KCAL;
 
     private FirebaseFirestore db;
     private OnDataEventListener listener;
@@ -70,6 +71,7 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_EXP_DATE, openDating.getExpDate());
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
         food.put(COLUMN_LOCATION, openDating.getLocation());
+        food.put(COLUMN_KCAL, openDating.getKcal());
 
         db.collection("Foods").document(Long.toString(openDating.getID()))
                 .set(food)
