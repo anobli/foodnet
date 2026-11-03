@@ -20,6 +20,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -27,7 +28,15 @@ import androidx.core.app.NotificationCompat;
 public class FoodNetNotification {
     public static final String CHANNEL_ID = FoodNetReceiver.NOTIFICATION_CHANNEL_ID;
 
-    private static Notification getNotification(Context context, String title, String content) {
+    private static Notification getNotification(Context context, long id, String title, String content) {
+        Intent openItemIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("foodnet://foodnet.bailon.ovh?id=" + id));
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent contentIntent = PendingIntent.getActivity(context, (int) id, openItemIntent, flags);
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID);
         builder.setContentTitle(title);
         builder.setContentText(content);
@@ -35,18 +44,19 @@ public class FoodNetNotification {
         builder.setPriority(NotificationCompat.PRIORITY_HIGH);
         builder.setCategory(NotificationCompat.CATEGORY_ALARM);
         builder.setAutoCancel(true);
+        builder.setContentIntent(contentIntent);
         return builder.build();
     }
 
-    public static void scheduleNotification(Context context, String food, long timestamp) {
+    public static void scheduleNotification(Context context, long id, String food, long timestamp) {
         String title = context.getResources().getString(R.string.notification_title);
         String format = context.getResources().getString(R.string.notification_content);
         String content = String.format(format, food);
-        
+
         Intent notificationIntent = new Intent(context, FoodNetReceiver.class);
         notificationIntent.putExtra(FoodNetReceiver.NOTIFICATION_ID, food.hashCode());
         notificationIntent.putExtra(FoodNetReceiver.NOTIFICATION,
-                getNotification(context, title, content));
+                getNotification(context, id, title, content));
         
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
