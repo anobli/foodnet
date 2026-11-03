@@ -50,4 +50,5 @@
     <string name="custom_qr_finish_print">Finish &amp; Print</string>
     <string name="custom_qr_print_job">Custom QR Codes</string>
     <string name="custom_qr_content_desc">Create custom QR codes</string>
+    <string name="custom_qr_label_required">Enter a label first</string>
 </resources>

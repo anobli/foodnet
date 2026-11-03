@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.gordios.qristal.db.FirestoreDBHelper;
 import net.gordios.qristal.db.FoodnetDBHelper;
@@ -93,6 +94,14 @@ public class FoodNetActivity extends AppCompatActivity
         Uri data = intent.getData();
         if (data != null) {
             id = data.getQueryParameter("id");
+
+            String label = data.getQueryParameter("label");
+            if (label != null && !label.isEmpty()) {
+                HashMap<String, String> prefill = new HashMap<>();
+                prefill.put(OpenDating.FOOD, label);
+                items.updateUi(prefill);
+            }
+
             db.requestGet(Long.parseLong(id));
         }
 
