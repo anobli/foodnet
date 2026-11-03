@@ -172,26 +172,37 @@ public class FoodNetListActivity extends AppCompatActivity
         final TextInputEditText input = view.findViewById(R.id.custom_label_edit);
         builder.setView(view);
 
-        builder.setPositiveButton(R.string.custom_qr_add_next, (dialog, which) -> {
-            String label = input.getText().toString().toUpperCase().trim();
-            if (!label.isEmpty()) {
+        builder.setPositiveButton(R.string.custom_qr_add_next, null);
+        builder.setNeutralButton(R.string.custom_qr_finish_print, null);
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                String label = input.getText().toString().toUpperCase().trim();
+                if (label.isEmpty()) {
+                    input.setError(getString(R.string.custom_qr_label_required));
+                    return;
+                }
                 labels.add(label);
+                dialog.dismiss();
                 showCustomQrWizard(labels);
-            }
-        });
-        
-        builder.setNeutralButton(R.string.custom_qr_finish_print, (dialog, which) -> {
-            String label = input.getText().toString().toUpperCase().trim();
-            if (!label.isEmpty()) {
-                labels.add(label);
-            }
-            if (!labels.isEmpty()) {
+            });
+
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                String label = input.getText().toString().toUpperCase().trim();
+                if (!label.isEmpty()) {
+                    labels.add(label);
+                } else if (labels.isEmpty()) {
+                    input.setError(getString(R.string.custom_qr_label_required));
+                    return;
+                }
+                dialog.dismiss();
                 printCustomLabels(labels);
-            }
+            });
         });
 
-        builder.setNegativeButton(android.R.string.cancel, null);
-        builder.show();
+        dialog.show();
     }
 
     private void printCustomLabels(List<String> labels) {
