@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -110,11 +111,17 @@ public class FoodNetActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v.getId() == R.id.saveButton) {
             OpenDating newOpenDating = new OpenDating(items.getHashMap());
+            if (!newOpenDating.check()) {
+                Toast.makeText(this, R.string.invalid_food_item, Toast.LENGTH_LONG).show();
+                return;
+            }
             newOpenDating.setId(id);
             if (openDating == null) {
                 newOpenDating.scheduleNotifications(this);
                 db.add(newOpenDating);
             } else {
+                openDating.cancelNotifications(this);
+                newOpenDating.scheduleNotifications(this);
                 db.update(newOpenDating);
             }
             finish();

@@ -26,6 +26,8 @@ import java.util.Map;
 
 
 public class OpenDating {
+    private static final long NOTIFICATION_LEAD_TIME_MS = 2L * 24 * 60 * 60 * 1000;
+
     private DateFormat df;
     private HashMap<String, String> hashMap;
 
@@ -248,8 +250,10 @@ public class OpenDating {
         try {
             Date expDate = df.parse(hashMap.get(EXP_DATE));
             if (expDate != null) {
+                long id = hashMap.get(ID) != null ? Long.parseLong(hashMap.get(ID)) : -1;
                 String food = hashMap.get(FOOD);
-                FoodNetNotification.scheduleNotification(context, food, expDate.getTime());
+                long notifyTime = expDate.getTime() - NOTIFICATION_LEAD_TIME_MS;
+                FoodNetNotification.scheduleNotification(context, id, food, notifyTime);
             }
         } catch (ParseException ex) {
             // ignore
