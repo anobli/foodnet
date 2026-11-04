@@ -58,6 +58,6 @@ public class ListItemTextValue extends ListItemBase {
     public String toString() {
         if (valueTxt != null)
             return valueTxt.getText().toString();
-        return "";
+        return value != null ? value : "";
     }
 }

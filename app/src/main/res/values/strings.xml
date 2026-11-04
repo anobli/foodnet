@@ -25,6 +25,9 @@
     <string name="delete_item_title">Delete item?</string>
     <string name="delete_item_message">Remove \"%s\" from your list? This can\'t be undone.</string>
     <string name="delete">Delete</string>
+    <string name="discard_changes_title">Discard changes?</string>
+    <string name="discard_changes_message">You have unsaved changes that will be lost.</string>
+    <string name="discard">Discard</string>
     <string name="freezer">Freezer</string>
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>

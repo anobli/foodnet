@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -55,6 +56,7 @@ public class FoodNetActivity extends AppCompatActivity
     private IFoodnetDBHelper db;
     private String id = null;
     private ArrayItems items;
+    private HashMap<String, String> savedState = new HashMap<>();
 
     DateFormat df;
 
@@ -103,8 +105,33 @@ public class FoodNetActivity extends AppCompatActivity
                 items.updateUi(prefill);
             }
 
+            savedState = new HashMap<>(items.getHashMap());
+            // The Location spinner only settles to its real default after this layout
+            // pass; re-snapshot once it has, unless onGetReady() already loaded real data.
+            listView.post(() -> {
+                if (openDating == null) {
+                    savedState = new HashMap<>(items.getHashMap());
+                }
+            });
+
             db.requestGet(Long.parseLong(id));
         }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (items.getHashMap().equals(savedState)) {
+                    finish();
+                    return;
+                }
+                new AlertDialog.Builder(FoodNetActivity.this)
+                        .setTitle(R.string.discard_changes_title)
+                        .setMessage(R.string.discard_changes_message)
+                        .setPositiveButton(R.string.discard, (dialog, which) -> finish())
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            }
+        });
 
         ComponentName receiver = new ComponentName(this, FoodNetBootReceiver.class);
         PackageManager pm = getPackageManager();
@@ -163,6 +190,7 @@ public class FoodNetActivity extends AppCompatActivity
         if (openDating != null) {
             items.updateUi(openDating.getHashMap());
             this.openDating = openDating;
+            savedState = new HashMap<>(items.getHashMap());
         }
     }
 }
