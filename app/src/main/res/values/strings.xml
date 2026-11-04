@@ -22,6 +22,9 @@
     <string name="camera_permission_denied">Camera permission has been denied. You won\'t be able to scan QR codes!</string>
     <string name="invalid_qr_code">The scanned QR code is not valid.</string>
     <string name="invalid_food_item">Please check the food name, dates and calories: one of them is missing or not valid.</string>
+    <string name="delete_item_title">Delete item?</string>
+    <string name="delete_item_message">Remove \"%s\" from your list? This can\'t be undone.</string>
+    <string name="delete">Delete</string>
     <string name="freezer">Freezer</string>
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
