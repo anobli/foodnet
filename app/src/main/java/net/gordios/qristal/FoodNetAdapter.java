@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.ArrayList;
@@ -86,10 +87,17 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
             @Override
             public void onClick(View view) {
                 int position = (Integer) view.getTag();
-
                 OpenDating openDating = getItem(position);
-                openDating.cancelNotifications(context);
-                db.delete(openDating);
+
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.delete_item_title)
+                        .setMessage(context.getString(R.string.delete_item_message, openDating.getFood()))
+                        .setPositiveButton(R.string.delete, (dialog, which) -> {
+                            openDating.cancelNotifications(context);
+                            db.delete(openDating);
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
             }
         });
 

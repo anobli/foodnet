@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -135,8 +136,20 @@ public class FoodNetActivity extends AppCompatActivity
             }
             finish();
         } else if (v.getId() == R.id.deleteButton) {
-            db.delete(openDating);
-            finish();
+            if (openDating == null) {
+                finish();
+                return;
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_item_title)
+                    .setMessage(getString(R.string.delete_item_message, openDating.getFood()))
+                    .setPositiveButton(R.string.delete, (dialog, which) -> {
+                        openDating.cancelNotifications(this);
+                        db.delete(openDating);
+                        finish();
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
         }
     }
 
