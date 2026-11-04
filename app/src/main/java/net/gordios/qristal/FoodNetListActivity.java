@@ -105,6 +105,7 @@ public class FoodNetListActivity extends AppCompatActivity
         ListView listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
         listView.setAdapter(this.listViewAdapter);
+        listView.setEmptyView(findViewById(R.id.empty_list_view));
         tabLayout = findViewById(R.id.tabLayout);
         tabLayout.addOnTabSelectedListener(this);
 

@@ -28,11 +28,12 @@
     <string name="discard_changes_title">Discard changes?</string>
     <string name="discard_changes_message">You have unsaved changes that will be lost.</string>
     <string name="discard">Discard</string>
+    <string name="empty_list_message">No items here yet. Scan or print a QR code to add one.</string>
     <string name="freezer">Freezer</string>
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
     <string name="all">All</string>
-    <string name="qr_print_content_desc">Print few randomly generated QR code</string>
+    <string name="qr_print_content_desc">Print a few randomly generated QR codes</string>
     <string name="scan_qr_content_desc">Scan a QR code</string>
     <string name="delete_button_content_desc">Delete</string>
     <string name="show_qr_code_content_desc">Show QR code for group invitation</string>
