@@ -60,4 +60,6 @@
     <string name="custom_qr_print_job">Custom QR Codes</string>
     <string name="custom_qr_content_desc">Create custom QR codes</string>
     <string name="custom_qr_label_required">Enter a label first</string>
+    <string name="sign_in_failed">Sign-in failed. Please try again.</string>
+    <string name="sign_in_failed_reason">Sign-in failed: %s</string>
 </resources>
