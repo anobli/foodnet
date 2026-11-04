@@ -27,6 +27,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -39,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.gordios.qristal.db.FirestoreDBHelper;
 import net.gordios.qristal.db.FoodnetDBHelper;
@@ -49,14 +52,19 @@ import net.gordios.qristal.ui.ListItemBase;
 import net.gordios.qristal.ui.ListItemDate;
 import net.gordios.qristal.ui.ListItemSpinner;
 import net.gordios.qristal.ui.ListItemTextValue;
+import net.gordios.qristal.utils.QrCodeScanActivity;
 
 public class FoodNetActivity extends AppCompatActivity
         implements View.OnClickListener, OnDataEventListener {
+    private static final String EXTRA_DUPLICATE_DATA = "duplicate_data";
+
     private OpenDating openDating = null;
     private IFoodnetDBHelper db;
     private String id = null;
     private ArrayItems items;
     private HashMap<String, String> savedState = new HashMap<>();
+    private HashMap<String, String> pendingDuplicateExtras;
+    private ActivityResultLauncher<Intent> duplicateQrLauncher;
 
     DateFormat df;
 
@@ -93,6 +101,34 @@ public class FoodNetActivity extends AppCompatActivity
         ListView listView = findViewById(R.id.testListView);
         listView.setAdapter(listViewAdapter);
 
+        duplicateQrLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != 0 || result.getData() == null
+                            || !result.getData().hasExtra("url")) {
+                        return;
+                    }
+                    Uri scanned = Uri.parse(result.getData().getStringExtra("url"));
+                    String newId = scanned.getQueryParameter("id");
+                    if (newId == null || !"foodnet".equals(scanned.getScheme())
+                            || !"foodnet.bailon.ovh".equals(scanned.getHost())) {
+                        Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (newId.equals(id)) {
+                        Toast.makeText(this, R.string.duplicate_same_qr_code, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    Intent duplicateIntent = new Intent(this, FoodNetActivity.class);
+                    duplicateIntent.setData(scanned);
+                    Bundle extras = new Bundle();
+                    for (Map.Entry<String, String> entry : pendingDuplicateExtras.entrySet()) {
+                        extras.putString(entry.getKey(), entry.getValue());
+                    }
+                    duplicateIntent.putExtra(EXTRA_DUPLICATE_DATA, extras);
+                    startActivity(duplicateIntent);
+                });
+
         Intent intent = getIntent();
         Uri data = intent.getData();
         if (data != null) {
@@ -102,6 +138,15 @@ public class FoodNetActivity extends AppCompatActivity
             if (label != null && !label.isEmpty()) {
                 HashMap<String, String> prefill = new HashMap<>();
                 prefill.put(OpenDating.FOOD, label);
+                items.updateUi(prefill);
+            }
+
+            Bundle duplicateExtras = intent.getBundleExtra(EXTRA_DUPLICATE_DATA);
+            if (duplicateExtras != null) {
+                HashMap<String, String> prefill = new HashMap<>();
+                for (String key : duplicateExtras.keySet()) {
+                    prefill.put(key, duplicateExtras.getString(key));
+                }
                 items.updateUi(prefill);
             }
 
@@ -142,26 +187,46 @@ public class FoodNetActivity extends AppCompatActivity
 
         findViewById(R.id.saveButton).setOnClickListener(this);
         findViewById(R.id.deleteButton).setOnClickListener(this);
+        findViewById(R.id.duplicateButton).setOnClickListener(this);
+    }
+
+    /**
+     * Validate and persist the data currently shown in the form.
+     * @return the saved item, or null if the form data is invalid (a toast is shown in that case)
+     */
+    private OpenDating saveCurrentItem() {
+        OpenDating newOpenDating = new OpenDating(items.getHashMap());
+        if (!newOpenDating.check()) {
+            Toast.makeText(this, R.string.invalid_food_item, Toast.LENGTH_LONG).show();
+            return null;
+        }
+        newOpenDating.setId(id);
+        if (openDating == null) {
+            newOpenDating.scheduleNotifications(this);
+            db.add(newOpenDating);
+        } else {
+            openDating.cancelNotifications(this);
+            newOpenDating.scheduleNotifications(this);
+            db.update(newOpenDating);
+        }
+        openDating = newOpenDating;
+        savedState = new HashMap<>(items.getHashMap());
+        return newOpenDating;
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.saveButton) {
-            OpenDating newOpenDating = new OpenDating(items.getHashMap());
-            if (!newOpenDating.check()) {
-                Toast.makeText(this, R.string.invalid_food_item, Toast.LENGTH_LONG).show();
+            if (saveCurrentItem() != null) {
+                finish();
+            }
+        } else if (v.getId() == R.id.duplicateButton) {
+            if (saveCurrentItem() == null) {
                 return;
             }
-            newOpenDating.setId(id);
-            if (openDating == null) {
-                newOpenDating.scheduleNotifications(this);
-                db.add(newOpenDating);
-            } else {
-                openDating.cancelNotifications(this);
-                newOpenDating.scheduleNotifications(this);
-                db.update(newOpenDating);
-            }
-            finish();
+            pendingDuplicateExtras = new HashMap<>(items.getHashMap());
+            pendingDuplicateExtras.remove(OpenDating.ID);
+            duplicateQrLauncher.launch(new Intent(this, QrCodeScanActivity.class));
         } else if (v.getId() == R.id.deleteButton) {
             if (openDating == null) {
                 finish();
