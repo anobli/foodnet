@@ -47,6 +47,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.print.PrintHelper;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.FirebaseUiException;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
@@ -126,8 +128,24 @@ public class FoodNetListActivity extends AppCompatActivity
                         if (user != null) {
                             invalidateOptionsMenu();
                             syncLocalToFirebase(user);
+                        } else {
+                            Toast.makeText(this, R.string.sign_in_failed, Toast.LENGTH_LONG).show();
                         }
+                        return;
                     }
+
+                    IdpResponse response = IdpResponse.fromResultIntent(result.getData());
+                    if (response == null) {
+                        // User cancelled the sign-in flow; nothing to report.
+                        return;
+                    }
+                    FirebaseUiException error = response.getError();
+                    String message = error != null ? error.getMessage() : null;
+                    Toast.makeText(this,
+                            message != null
+                                    ? getString(R.string.sign_in_failed_reason, message)
+                                    : getString(R.string.sign_in_failed),
+                            Toast.LENGTH_LONG).show();
                 });
 
         requestPermissionsLauncher = registerForActivityResult(

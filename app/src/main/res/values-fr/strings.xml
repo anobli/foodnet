@@ -76,4 +76,6 @@
     <string name="custom_qr_print_job">QR codes personnalisés</string>
     <string name="custom_qr_content_desc">Créer des QR codes personnalisés</string>
     <string name="custom_qr_label_required">Entrez d\'abord une étiquette</string>
+    <string name="sign_in_failed">Échec de la connexion. Veuillez réessayer.</string>
+    <string name="sign_in_failed_reason">Échec de la connexion : %s</string>
 </resources>
