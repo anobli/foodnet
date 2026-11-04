@@ -43,7 +43,13 @@ public class ListItemSpinner<T> extends ListItemBase implements AdapterView.OnIt
         spinner = convertView.findViewById(R.id.itemSpinner);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
-        setSelectedItem(value);
+        if (value != null) {
+            setSelectedItem(value);
+        } else if (adapter.getCount() > 0) {
+            // Spinner defaults to position 0, but onItemSelected() isn't delivered until
+            // after this layout pass; set value synchronously so toString() is accurate now.
+            value = Long.toString(spinner.getAdapter().getItemId(spinner.getSelectedItemPosition()));
+        }
 
         return convertView;
     }
@@ -51,10 +57,7 @@ public class ListItemSpinner<T> extends ListItemBase implements AdapterView.OnIt
     @NonNull
     @Override
     public String toString() {
-        if (spinner != null) {
-            return Long.toString(spinner.getAdapter().getItemId(spinner.getSelectedItemPosition()));
-        }
-        return "0";
+        return value != null ? value : "0";
     }
 
     private void setSelectedItem(String value) {
