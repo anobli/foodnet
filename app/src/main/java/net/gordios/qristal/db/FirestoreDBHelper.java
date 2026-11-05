@@ -77,7 +77,11 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_LOCATION, openDating.getLocation());
         food.put(COLUMN_KCAL, openDating.getKcal());
 
-        db.collection("Foods").document(Long.toString(openDating.getID()))
+        // Prefixed by group so two users independently rolling the same random
+        // item id can never land on the same document and silently overwrite
+        // each other. Reads stay group/id *queries* (see requestGet/requestGetAll),
+        // so this doesn't require migrating documents written before this change.
+        db.collection("Foods").document(group_id + "_" + openDating.getID())
                 .set(food)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
