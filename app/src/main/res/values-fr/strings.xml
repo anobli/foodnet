@@ -83,4 +83,11 @@
     <string name="signed_in_success_with_sync_error">Connecté en tant que %s. Certains éléments n\'ont pas pu être synchronisés avec le cloud et sont restés sur cet appareil.</string>
     <string name="duplicate_row_button_content_desc">Dupliquer vers un autre contenant</string>
     <string name="duplicate_qr_already_used">Ce QR code est déjà utilisé par un autre élément. Scannez-en un différent.</string>
+    <string name="give_button_content_desc">Donner à une autre personne</string>
+    <string name="give_dialog_title">Donner cet élément</string>
+    <string name="give_waiting_for_receipt">En attente que l\'autre téléphone scanne et enregistre cet élément…</string>
+    <string name="give_sign_in_required">Connectez-vous pour donner des éléments à une autre personne.</string>
+    <string name="give_start_failed">Impossible de démarrer le transfert. Vérifiez votre connexion et réessayez.</string>
+    <string name="give_complete_failed">Enregistré, mais impossible de notifier l\'autre téléphone. Demandez-lui de le supprimer manuellement.</string>
+    <string name="give_completed">\"%s\" a été reçu et retiré de votre liste.</string>
 </resources>

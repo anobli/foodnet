@@ -19,10 +19,13 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -37,7 +40,15 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +76,9 @@ public class FoodNetActivity extends AppCompatActivity
     private HashMap<String, String> savedState = new HashMap<>();
     private HashMap<String, String> pendingDuplicateExtras;
     private ActivityResultLauncher<Intent> duplicateQrLauncher;
+    private String pendingTransferId;
+    private ListenerRegistration transferListener;
+    private AlertDialog giveDialog;
 
     DateFormat df;
 
@@ -157,6 +171,24 @@ public class FoodNetActivity extends AppCompatActivity
                 items.updateUi(prefill);
             }
 
+            String transferId = data.getQueryParameter("transfer");
+            if (transferId != null) {
+                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    Toast.makeText(this, R.string.give_sign_in_required, Toast.LENGTH_LONG).show();
+                } else {
+                    pendingTransferId = transferId;
+                    HashMap<String, String> prefill = new HashMap<>();
+                    for (String key : new String[]{OpenDating.FOOD, OpenDating.PROD_DATE,
+                            OpenDating.EXP_DATE, OpenDating.OPENING_DATE, OpenDating.LOCATION, OpenDating.KCAL}) {
+                        String value = data.getQueryParameter(key);
+                        if (value != null) {
+                            prefill.put(key, value);
+                        }
+                    }
+                    items.updateUi(prefill);
+                }
+            }
+
             savedState = new HashMap<>(items.getHashMap());
             // The Location spinner only settles to its real default after this layout
             // pass; re-snapshot once it has, unless onGetReady() already loaded real data.
@@ -195,6 +227,16 @@ public class FoodNetActivity extends AppCompatActivity
         findViewById(R.id.saveButton).setOnClickListener(this);
         findViewById(R.id.deleteButton).setOnClickListener(this);
         findViewById(R.id.duplicateButton).setOnClickListener(this);
+        findViewById(R.id.giveButton).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (transferListener != null) {
+            transferListener.remove();
+            transferListener = null;
+        }
     }
 
     private interface OnQrAvailabilityListener {
@@ -253,10 +295,125 @@ public class FoodNetActivity extends AppCompatActivity
         return newOpenDating;
     }
 
+    /**
+     * Starts a "give" transfer: saves this item, creates a pending Transfers doc, and
+     * shows a QR encoding the full item data plus the transfer id. The dialog listens
+     * for that doc to flip to "completed" (written by the recipient after they scan
+     * and save) and only then deletes this item -- never on scan alone, so a cancelled
+     * or failed scan on the other end leaves this item untouched.
+     */
+    private void showGiveDialog() {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, R.string.give_sign_in_required, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (saveCurrentItem() == null) {
+            return;
+        }
+
+        String transferId = Long.toString(new SecureRandom().nextLong() & Long.MAX_VALUE);
+        Map<String, Object> transfer = new HashMap<>();
+        transfer.put("status", "pending");
+        transfer.put("itemId", id);
+
+        FirebaseFirestore.getInstance().collection("Transfers").document(transferId)
+                .set(transfer)
+                .addOnSuccessListener(aVoid -> displayGiveDialog(transferId))
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.give_start_failed, Toast.LENGTH_LONG).show());
+    }
+
+    private void displayGiveDialog(String transferId) {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("foodnet").authority("foodnet.bailon.ovh");
+        builder.appendQueryParameter("id", id);
+        builder.appendQueryParameter("transfer", transferId);
+        HashMap<String, String> giveData = new HashMap<>(items.getHashMap());
+        giveData.remove(OpenDating.ID);
+        for (Map.Entry<String, String> entry : giveData.entrySet()) {
+            if (entry.getValue() != null && !entry.getValue().isEmpty()) {
+                builder.appendQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Bitmap bitmap = createQrBitmap(builder.build().toString());
+        if (bitmap == null) {
+            Toast.makeText(this, R.string.give_start_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_give_qr_code, null);
+        ImageView imageView = view.findViewById(R.id.dialogQrCode);
+        imageView.setImageBitmap(bitmap);
+
+        giveDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.give_dialog_title)
+                .setView(view)
+                .setCancelable(false)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> cancelTransfer(transferId))
+                .show();
+
+        transferListener = FirebaseFirestore.getInstance()
+                .collection("Transfers").document(transferId)
+                .addSnapshotListener((snapshot, error) -> {
+                    if (error != null || snapshot == null || !snapshot.exists()) {
+                        return;
+                    }
+                    if ("completed".equals(snapshot.getString("status"))) {
+                        onTransferCompleted();
+                    }
+                });
+    }
+
+    private void onTransferCompleted() {
+        if (transferListener != null) {
+            transferListener.remove();
+            transferListener = null;
+        }
+        if (giveDialog != null) {
+            giveDialog.dismiss();
+            giveDialog = null;
+        }
+        String food = openDating != null ? openDating.getFood() : "";
+        if (openDating != null) {
+            openDating.cancelNotifications(this);
+            db.delete(openDating);
+        }
+        Toast.makeText(this, getString(R.string.give_completed, food), Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    private void cancelTransfer(String transferId) {
+        if (transferListener != null) {
+            transferListener.remove();
+            transferListener = null;
+        }
+        FirebaseFirestore.getInstance().collection("Transfers").document(transferId).delete();
+        giveDialog = null;
+    }
+
+    private void completeTransfer(String transferId) {
+        FirebaseFirestore.getInstance().collection("Transfers").document(transferId)
+                .update("status", "completed")
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.give_complete_failed, Toast.LENGTH_LONG).show());
+    }
+
+    private Bitmap createQrBitmap(String text) {
+        try {
+            BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, 512, 512);
+            return new BarcodeEncoder().createBitmap(bitMatrix);
+        } catch (WriterException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.saveButton) {
             if (saveCurrentItem() != null) {
+                if (pendingTransferId != null) {
+                    completeTransfer(pendingTransferId);
+                }
                 finish();
             }
         } else if (v.getId() == R.id.duplicateButton) {
@@ -266,6 +423,8 @@ public class FoodNetActivity extends AppCompatActivity
             pendingDuplicateExtras = new HashMap<>(items.getHashMap());
             pendingDuplicateExtras.remove(OpenDating.ID);
             duplicateQrLauncher.launch(new Intent(this, QrCodeScanActivity.class));
+        } else if (v.getId() == R.id.giveButton) {
+            showGiveDialog();
         } else if (v.getId() == R.id.deleteButton) {
             if (openDating == null) {
                 finish();
