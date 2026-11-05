@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "net.gordios.qristal"
         minSdkVersion 24
-        targetSdk 35
-        versionCode 7
-        versionName "1.04"
+        targetSdk 36
+        versionCode 8
+        versionName "1.05"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -25,7 +25,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             Properties properties = new Properties()
 
@@ -34,6 +35,9 @@ android {
                 properties.load(propertiesFile.newDataInputStream())
             }
 
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
 
             signingConfig signingConfigs.release
         }
