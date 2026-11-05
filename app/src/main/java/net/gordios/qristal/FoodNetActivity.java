@@ -56,7 +56,7 @@ import net.gordios.qristal.utils.QrCodeScanActivity;
 
 public class FoodNetActivity extends AppCompatActivity
         implements View.OnClickListener, OnDataEventListener {
-    private static final String EXTRA_DUPLICATE_DATA = "duplicate_data";
+    static final String EXTRA_DUPLICATE_DATA = "duplicate_data";
 
     private OpenDating openDating = null;
     private IFoodnetDBHelper db;
@@ -119,14 +119,21 @@ public class FoodNetActivity extends AppCompatActivity
                         Toast.makeText(this, R.string.duplicate_same_qr_code, Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Intent duplicateIntent = new Intent(this, FoodNetActivity.class);
-                    duplicateIntent.setData(scanned);
-                    Bundle extras = new Bundle();
-                    for (Map.Entry<String, String> entry : pendingDuplicateExtras.entrySet()) {
-                        extras.putString(entry.getKey(), entry.getValue());
-                    }
-                    duplicateIntent.putExtra(EXTRA_DUPLICATE_DATA, extras);
-                    startActivity(duplicateIntent);
+                    checkQrCodeAvailable(newId, available -> {
+                        if (!available) {
+                            Toast.makeText(this, R.string.duplicate_qr_already_used, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Intent duplicateIntent = new Intent(this, FoodNetActivity.class);
+                        duplicateIntent.setData(scanned);
+                        Bundle extras = new Bundle();
+                        for (Map.Entry<String, String> entry : pendingDuplicateExtras.entrySet()) {
+                            extras.putString(entry.getKey(), entry.getValue());
+                        }
+                        duplicateIntent.putExtra(EXTRA_DUPLICATE_DATA, extras);
+                        startActivity(duplicateIntent);
+                        finish();
+                    });
                 });
 
         Intent intent = getIntent();
@@ -188,6 +195,38 @@ public class FoodNetActivity extends AppCompatActivity
         findViewById(R.id.saveButton).setOnClickListener(this);
         findViewById(R.id.deleteButton).setOnClickListener(this);
         findViewById(R.id.duplicateButton).setOnClickListener(this);
+    }
+
+    private interface OnQrAvailabilityListener {
+        void onResult(boolean available);
+    }
+
+    /**
+     * Checks whether {@code qrId} isn't already assigned to an existing item.
+     * Uses a standalone helper/listener (not the activity's own {@code db}/{@code this}
+     * registration) so this lookup can't race with or clobber the main item-load flow.
+     */
+    private void checkQrCodeAvailable(String qrId, OnQrAvailabilityListener callback) {
+        IFoodnetDBHelper checkDb;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            checkDb = new FoodnetDBHelper(this);
+        } else {
+            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+            String group = sharedPreferences.getString("group", currentUser.getUid());
+            checkDb = new FirestoreDBHelper(this, group);
+        }
+        checkDb.registerOnDataChange(new OnDataEventListener() {
+            @Override
+            public void onGetAllReady(ArrayList<OpenDating> list) {
+            }
+
+            @Override
+            public void onGetReady(OpenDating existing) {
+                callback.onResult(existing == null);
+            }
+        });
+        checkDb.requestGet(Long.parseLong(qrId));
     }
 
     /**

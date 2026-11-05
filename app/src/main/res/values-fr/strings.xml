@@ -78,4 +78,9 @@
     <string name="custom_qr_label_required">Entrez d\'abord une étiquette</string>
     <string name="sign_in_failed">Échec de la connexion. Veuillez réessayer.</string>
     <string name="sign_in_failed_reason">Échec de la connexion : %s</string>
+    <string name="signed_in_success">Connecté en tant que %s</string>
+    <string name="signed_in_success_with_sync">Connecté en tant que %s. Vos éléments locaux ont été synchronisés avec le cloud.</string>
+    <string name="signed_in_success_with_sync_error">Connecté en tant que %s. Certains éléments n\'ont pas pu être synchronisés avec le cloud et sont restés sur cet appareil.</string>
+    <string name="duplicate_row_button_content_desc">Dupliquer vers un autre contenant</string>
+    <string name="duplicate_qr_already_used">Ce QR code est déjà utilisé par un autre élément. Scannez-en un différent.</string>
 </resources>

@@ -35,13 +35,22 @@ import java.util.Locale;
 import net.gordios.qristal.db.IFoodnetDBHelper;
 
 public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
+    public interface OnDuplicateRequestedListener {
+        void onDuplicateRequested(OpenDating item);
+    }
+
     private IFoodnetDBHelper db;
     private Context context;
+    private OnDuplicateRequestedListener duplicateListener;
 
     public FoodNetAdapter(Context context, ArrayList<OpenDating> list, IFoodnetDBHelper db) {
         super(context, 0, list);
         this.context = context;
         this.db = db;
+    }
+
+    public void setOnDuplicateRequestedListener(OnDuplicateRequestedListener listener) {
+        this.duplicateListener = listener;
     }
 
     @NonNull
@@ -78,6 +87,18 @@ public class FoodNetAdapter extends ArrayAdapter<OpenDating> {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(builder.build());
                 context.startActivity(i);
+            }
+        });
+
+        ImageButton duplicate = (ImageButton) convertView.findViewById(R.id.duplicate);
+        duplicate.setTag(position);
+        duplicate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = (Integer) view.getTag();
+                if (duplicateListener != null) {
+                    duplicateListener.onDuplicateRequested(getItem(position));
+                }
             }
         });
 

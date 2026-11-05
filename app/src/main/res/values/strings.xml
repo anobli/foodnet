@@ -62,4 +62,9 @@
     <string name="custom_qr_label_required">Enter a label first</string>
     <string name="sign_in_failed">Sign-in failed. Please try again.</string>
     <string name="sign_in_failed_reason">Sign-in failed: %s</string>
+    <string name="signed_in_success">Signed in as %s</string>
+    <string name="signed_in_success_with_sync">Signed in as %s. Your local items were synced to the cloud.</string>
+    <string name="signed_in_success_with_sync_error">Signed in as %s. Some items could not be synced to the cloud and were kept on this device.</string>
+    <string name="duplicate_row_button_content_desc">Duplicate to another container</string>
+    <string name="duplicate_qr_already_used">This QR code is already used by another item. Scan a different one.</string>
 </resources>

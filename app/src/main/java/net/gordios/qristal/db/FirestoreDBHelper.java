@@ -63,6 +63,10 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     }
 
     public void add(OpenDating openDating) {
+        add(openDating, null);
+    }
+
+    public void add(OpenDating openDating, OnAddCompleteListener listener) {
         Map<String, Object> food = new HashMap<>();
         food.put(COLUMN_ID, openDating.getID());
         food.put(COLUMN_GROUP, group_id);
@@ -78,12 +82,14 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        if (listener != null) listener.onSuccess();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
+                        if (listener != null) listener.onFailure(e);
                     }
                 });
     }

@@ -88,7 +88,10 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
     }
 
     public void add(OpenDating openDating) {
+        add(openDating, null);
+    }
 
+    public void add(OpenDating openDating, OnAddCompleteListener listener) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_ID, openDating.getID());
         values.put(COLUMN_FOOD, openDating.getFood());
@@ -99,8 +102,16 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         values.put(COLUMN_KCAL, openDating.getKcal());
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_NOTE, null, values);
+        long result = db.insert(TABLE_NOTE, null, values);
         db.close();
+
+        if (listener != null) {
+            if (result == -1) {
+                listener.onFailure(new Exception("Failed to insert into local database"));
+            } else {
+                listener.onSuccess();
+            }
+        }
     }
 
     @Override

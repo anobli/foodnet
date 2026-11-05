@@ -21,7 +21,14 @@ import net.gordios.qristal.OnDataEventListener;
 import net.gordios.qristal.OpenDating;
 
 public interface IFoodnetDBHelper {
+    interface OnAddCompleteListener {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
     void add(OpenDating openDating);
+
+    void add(OpenDating openDating, OnAddCompleteListener listener);
 
     void requestGet(long id);
 
