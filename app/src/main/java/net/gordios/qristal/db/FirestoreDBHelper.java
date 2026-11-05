@@ -106,12 +106,13 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Map<String, Object> food = document.getData();
-                                OpenDating openDating = new OpenDating(food);
-                                listener.onGetReady(openDating);
-                            }
+                        // Always report back exactly once, including the "not found" case
+                        // (a successful query with zero matches) -- callers like the
+                        // duplicate-availability check depend on onGetReady firing even
+                        // when there's nothing to find.
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            Map<String, Object> food = task.getResult().getDocuments().get(0).getData();
+                            listener.onGetReady(new OpenDating(food));
                         } else {
                             listener.onGetReady(null);
                         }
