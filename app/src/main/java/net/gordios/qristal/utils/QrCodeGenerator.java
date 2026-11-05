@@ -27,10 +27,10 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 public class QrCodeGenerator {
     private static Bitmap appendImages(Bitmap bmp1, Bitmap bmp2, boolean vertical) {
@@ -62,11 +62,11 @@ public class QrCodeGenerator {
     }
 
     private static Bitmap createQrCode(Uri.Builder builder, String customLabel) {
-        Random random = new Random();
-        int sn;
-
-        sn = random.nextInt(Integer.MAX_VALUE);
-        String idStr = String.format(Locale.US, "%010d", sn);
+        // 63 bits of entropy (sign bit cleared) rather than the 31 bits nextInt()
+        // gave us, so two devices independently generating an id have a
+        // statistically negligible chance of colliding.
+        long sn = new SecureRandom().nextLong() & Long.MAX_VALUE;
+        String idStr = Long.toString(sn);
         String label = customLabel != null ? customLabel : String.format(Locale.US, "%05X", sn & 0xFFFFF);
 
         builder.clearQuery();
