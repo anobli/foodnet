@@ -48,6 +48,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String COLUMN_OPENING_DATE = OpenDating.OPENING_DATE;
     private static final String COLUMN_LOCATION = OpenDating.LOCATION;
     private static final String COLUMN_KCAL = OpenDating.KCAL;
+    private static final String COLUMN_COOKING_TEMP = OpenDating.COOKING_TEMP;
+    private static final String COLUMN_COOKING_TIME = OpenDating.COOKING_TIME;
+    private static final String COLUMN_PORTIONS = OpenDating.PORTIONS;
 
     private FirebaseFirestore db;
     private OnDataEventListener listener;
@@ -76,6 +79,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
         food.put(COLUMN_LOCATION, openDating.getLocation());
         food.put(COLUMN_KCAL, openDating.getKcal());
+        food.put(COLUMN_COOKING_TEMP, openDating.getCookingTemp());
+        food.put(COLUMN_COOKING_TIME, openDating.getCookingTime());
+        food.put(COLUMN_PORTIONS, openDating.getPortions());
 
         // Prefixed by group so two users independently rolling the same random
         // item id can never land on the same document and silently overwrite

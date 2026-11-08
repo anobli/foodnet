@@ -6,6 +6,12 @@
     <string name="openingDate">Opening Date</string>
     <string name="kcal">Calories (kcal)</string>
     <string name="kcalHint">e.g. 250</string>
+    <string name="cookingTemp">Cooking temp. (°C)</string>
+    <string name="cookingTempHint">e.g. 180</string>
+    <string name="cookingTime">Cooking time (min)</string>
+    <string name="cookingTimeHint">e.g. 25</string>
+    <string name="portions">Portions</string>
+    <string name="portionsHint">e.g. 4</string>
     <string name="save">Save</string>
     <string name="foodHint">Food name</string>
     <string name="prodDateHint">Production date</string>
@@ -21,7 +27,7 @@
     <string name="done">Done</string>
     <string name="camera_permission_denied">Camera permission has been denied. You won\'t be able to scan QR codes!</string>
     <string name="invalid_qr_code">The scanned QR code is not valid.</string>
-    <string name="invalid_food_item">Please check the food name, dates and calories: one of them is missing or not valid.</string>
+    <string name="invalid_food_item">Please check the food name, dates and numbers (calories, cooking, portions): one of them is missing or not valid.</string>
     <string name="delete_item_title">Delete item?</string>
     <string name="delete_item_message">Remove \"%s\" from your list? This can\'t be undone.</string>
     <string name="delete">Delete</string>

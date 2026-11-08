@@ -109,6 +109,12 @@ public class FoodNetActivity extends AppCompatActivity
         items.add("ExpDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.expDate));
         items.add("OpeningDate", new ListItemDate(this, R.layout.item_content_simple_date, R.string.openingDate));
         items.add("Kcal", new ListItemTextValue(this, R.layout.item_content_simple_number, R.string.kcal));
+        items.add(OpenDating.COOKING_TEMP, new ListItemTextValue(this,
+                R.layout.item_content_simple_number, R.string.cookingTemp, R.string.cookingTempHint));
+        items.add(OpenDating.COOKING_TIME, new ListItemTextValue(this,
+                R.layout.item_content_simple_number, R.string.cookingTime, R.string.cookingTimeHint));
+        items.add(OpenDating.PORTIONS, new ListItemTextValue(this,
+                R.layout.item_content_simple_number, R.string.portions, R.string.portionsHint));
         items.add("Location", new ListItemSpinner(this, new LocationAdapter(this)));
         ArrayAdapter<ListItemBase> listViewAdapter = new ListItemAdapter(this, items.getUiList());
         listViewAdapter.notifyDataSetChanged();
@@ -179,7 +185,8 @@ public class FoodNetActivity extends AppCompatActivity
                     pendingTransferId = transferId;
                     HashMap<String, String> prefill = new HashMap<>();
                     for (String key : new String[]{OpenDating.FOOD, OpenDating.PROD_DATE,
-                            OpenDating.EXP_DATE, OpenDating.OPENING_DATE, OpenDating.LOCATION, OpenDating.KCAL}) {
+                            OpenDating.EXP_DATE, OpenDating.OPENING_DATE, OpenDating.LOCATION, OpenDating.KCAL,
+                            OpenDating.COOKING_TEMP, OpenDating.COOKING_TIME, OpenDating.PORTIONS}) {
                         String value = data.getQueryParameter(key);
                         if (value != null) {
                             prefill.put(key, value);

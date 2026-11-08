@@ -22,6 +22,9 @@ import net.gordios.qristal.OpenDating;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -95,5 +98,60 @@ public class OpenDatingUnitTest {
         } catch (IllegalArgumentException ex) {
             assert true;
         }
+    }
+
+    @Test
+    public void testCookingFieldsAndPortions() {
+        OpenDating openDating = new OpenDating(7, "Lasagnes", null, null, null, FRIDGE_ID);
+
+        // Optional: unset fields read back as empty strings
+        assertEquals("", openDating.getCookingTemp());
+        assertEquals("", openDating.getCookingTime());
+        assertEquals("", openDating.getPortions());
+
+        openDating.setCookingTemp("180");
+        openDating.setCookingTime("45");
+        openDating.setPortions("6");
+        assertEquals("180", openDating.getCookingTemp());
+        assertEquals("45", openDating.getCookingTime());
+        assertEquals("6", openDating.getPortions());
+        assertTrue(openDating.check());
+    }
+
+    @Test
+    public void testCookingFieldsAndPortionsValidation() {
+        for (String key : new String[]{OpenDating.COOKING_TEMP, OpenDating.COOKING_TIME,
+                OpenDating.PORTIONS}) {
+            for (String bad : new String[]{"-1", "abc", "1.5"}) {
+                HashMap<String, String> map = new HashMap<>();
+                map.put(OpenDating.FOOD, "Gnocchi");
+                map.put(key, bad);
+                assertFalse(key + "=" + bad, new OpenDating(map).check());
+            }
+            HashMap<String, String> map = new HashMap<>();
+            map.put(OpenDating.FOOD, "Gnocchi");
+            map.put(key, "");
+            assertTrue(key + " empty", new OpenDating(map).check());
+        }
+    }
+
+    @Test
+    public void testFirestoreMapWithAndWithoutNewFields() {
+        // Documents written before these fields existed must still load
+        Map<String, Object> legacy = new HashMap<>();
+        legacy.put(OpenDating.ID, 8L);
+        legacy.put(OpenDating.FOOD, "Tourte de blettes");
+        OpenDating openDating = new OpenDating(legacy);
+        assertEquals("", openDating.getCookingTemp());
+        assertEquals("", openDating.getPortions());
+
+        Map<String, Object> doc = new HashMap<>(legacy);
+        doc.put(OpenDating.COOKING_TEMP, "200");
+        doc.put(OpenDating.COOKING_TIME, "30");
+        doc.put(OpenDating.PORTIONS, "4");
+        openDating = new OpenDating(doc);
+        assertEquals("200", openDating.getCookingTemp());
+        assertEquals("30", openDating.getCookingTime());
+        assertEquals("4", openDating.getPortions());
     }
 }

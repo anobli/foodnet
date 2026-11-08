@@ -26,9 +26,18 @@ import net.gordios.qristal.R;
 
 public class ListItemTextValue extends ListItemBase {
     protected TextView valueTxt;
+    private final int hintId;
 
     public ListItemTextValue(Context context, int resourceId, int nameId) {
+        this(context, resourceId, nameId, 0);
+    }
+
+    /**
+     * @param hintId string resource overriding the layout's hint, or 0 to keep the layout's
+     */
+    public ListItemTextValue(Context context, int resourceId, int nameId, int hintId) {
         super(context, resourceId, nameId);
+        this.hintId = hintId;
         value = "";
     }
 
@@ -38,6 +47,8 @@ public class ListItemTextValue extends ListItemBase {
             convertView = super.getView(position, convertView, parent);
         }
         valueTxt = (TextView) convertView.findViewById(R.id.itemTextValue);
+        if (hintId != 0)
+            valueTxt.setHint(hintId);
         if (value != null && value.length() > 0)
             valueTxt.setText(value);
         else

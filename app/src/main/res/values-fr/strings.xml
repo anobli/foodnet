@@ -22,6 +22,12 @@
     <string name="openingDate">Date d\'ouverture</string>
     <string name="kcal">Calories (kcal)</string>
     <string name="kcalHint">ex: 250</string>
+    <string name="cookingTemp">Temp. cuisson (°C)</string>
+    <string name="cookingTempHint">ex: 180</string>
+    <string name="cookingTime">Temps de cuisson (min)</string>
+    <string name="cookingTimeHint">ex: 25</string>
+    <string name="portions">Portions</string>
+    <string name="portionsHint">ex: 4</string>
     <string name="save">Enregistrer</string>
     <string name="foodHint">Nom de l\'aliment</string>
     <string name="prodDateHint">Date de fabrication</string>
@@ -37,7 +43,7 @@
     <string name="done">Terminé</string>
     <string name="camera_permission_denied">L\'accès à la caméra n\'a pas été autorisé. Vous ne pourrez pas scanner de QR codes!</string>
     <string name="invalid_qr_code">Le QR code scanné n\'est pas valide.</string>
-    <string name="invalid_food_item">Vérifiez le nom de l\'aliment, les dates et les calories : une de ces informations est manquante ou invalide.</string>
+    <string name="invalid_food_item">Vérifiez le nom de l\'aliment, les dates et les nombres (calories, cuisson, portions) : une de ces informations est manquante ou invalide.</string>
     <string name="delete_item_title">Supprimer cet élément ?</string>
     <string name="delete_item_message">Retirer « %s » de votre liste ? Cette action est irréversible.</string>
     <string name="delete">Supprimer</string>
