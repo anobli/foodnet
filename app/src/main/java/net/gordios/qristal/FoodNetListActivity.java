@@ -232,11 +232,33 @@ public class FoodNetListActivity extends AppCompatActivity
         ImageButton print_qr = findViewById(R.id.print_qr);
         print_qr.setOnClickListener(this);
 
-        ImageButton custom_qr = findViewById(R.id.custom_qr);
-        custom_qr.setOnClickListener(this);
-
         ImageButton scan_qr = findViewById(R.id.scan_qr);
         scan_qr.setOnClickListener(this);
+    }
+
+    private void showPrintQrChoiceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.print_qr_choice_title);
+        builder.setItems(new CharSequence[]{
+                getString(R.string.print_qr_choice_basic),
+                getString(R.string.print_qr_choice_custom)
+        }, (dialog, which) -> {
+            if (which == 0) {
+                printBasicQrCodes();
+            } else {
+                showCustomQrWizard(new ArrayList<>());
+            }
+        });
+        builder.show();
+    }
+
+    private void printBasicQrCodes() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("foodnet").authority("foodnet.bailon.ovh");
+        Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
+        PrintHelper photoPrinter = new PrintHelper(this);
+        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+        photoPrinter.printBitmap("QR code", sheet);
     }
 
     private void showCustomQrWizard(final List<String> labels) {
@@ -415,14 +437,7 @@ public class FoodNetListActivity extends AppCompatActivity
     @Override
     public void onClick(@NonNull View v) {
         if (v.getId() ==  R.id.print_qr) {
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme("foodnet").authority("foodnet.bailon.ovh");
-            Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
-            PrintHelper photoPrinter = new PrintHelper(this);
-            photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-            photoPrinter.printBitmap("QR code", sheet);
-        } else if (v.getId() == R.id.custom_qr) {
-            showCustomQrWizard(new ArrayList<>());
+            showPrintQrChoiceDialog();
         } else if(v.getId() == R.id.scan_qr) {
                 Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
                 qrCodeScanLauncher.launch(intent);

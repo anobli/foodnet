@@ -39,8 +39,11 @@
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
     <string name="all">All</string>
-    <string name="qr_print_content_desc">Print a few randomly generated QR codes</string>
+    <string name="qr_print_content_desc">Print QR codes</string>
     <string name="scan_qr_content_desc">Scan a QR code</string>
+    <string name="print_qr_choice_title">Print QR codes</string>
+    <string name="print_qr_choice_basic">Basic QR codes</string>
+    <string name="print_qr_choice_custom">Custom QR codes</string>
     <string name="delete_button_content_desc">Delete</string>
     <string name="duplicate_button_content_desc">Duplicate to another container</string>
     <string name="duplicate_same_qr_code">That\'s the same QR code. Scan a different one to duplicate onto it.</string>

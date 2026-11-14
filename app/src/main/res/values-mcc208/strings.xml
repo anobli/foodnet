@@ -55,8 +55,11 @@
     <string name="fridge">Frigo</string>
     <string name="cupboard">Placard</string>
     <string name="all">Tout</string>
-    <string name="qr_print_content_desc">Imprimer quelques QR codes générés aléatoirement</string>
+    <string name="qr_print_content_desc">Imprimer des QR codes</string>
     <string name="scan_qr_content_desc">Scanner un QR code</string>
+    <string name="print_qr_choice_title">Imprimer des QR codes</string>
+    <string name="print_qr_choice_basic">QR codes standards</string>
+    <string name="print_qr_choice_custom">QR codes personnalisés</string>
     <string name="delete_button_content_desc">Supprimer</string>
     <string name="duplicate_button_content_desc">Dupliquer vers un autre contenant</string>
     <string name="duplicate_same_qr_code">C\'est le même QR code. Scannez-en un autre pour y dupliquer les informations.</string>
