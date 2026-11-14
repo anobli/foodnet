@@ -48,6 +48,9 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     private static final String COLUMN_OPENING_DATE = OpenDating.OPENING_DATE;
     private static final String COLUMN_LOCATION = OpenDating.LOCATION;
     private static final String COLUMN_KCAL = OpenDating.KCAL;
+    private static final String COLUMN_COOKING_TEMP = OpenDating.COOKING_TEMP;
+    private static final String COLUMN_COOKING_TIME = OpenDating.COOKING_TIME;
+    private static final String COLUMN_PORTIONS = OpenDating.PORTIONS;
 
     private FirebaseFirestore db;
     private OnDataEventListener listener;
@@ -63,6 +66,10 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
     }
 
     public void add(OpenDating openDating) {
+        add(openDating, null);
+    }
+
+    public void add(OpenDating openDating, OnAddCompleteListener listener) {
         Map<String, Object> food = new HashMap<>();
         food.put(COLUMN_ID, openDating.getID());
         food.put(COLUMN_GROUP, group_id);
@@ -72,18 +79,27 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
         food.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
         food.put(COLUMN_LOCATION, openDating.getLocation());
         food.put(COLUMN_KCAL, openDating.getKcal());
+        food.put(COLUMN_COOKING_TEMP, openDating.getCookingTemp());
+        food.put(COLUMN_COOKING_TIME, openDating.getCookingTime());
+        food.put(COLUMN_PORTIONS, openDating.getPortions());
 
-        db.collection("Foods").document(Long.toString(openDating.getID()))
+        // Prefixed by group so two users independently rolling the same random
+        // item id can never land on the same document and silently overwrite
+        // each other. Reads stay group/id *queries* (see requestGet/requestGetAll),
+        // so this doesn't require migrating documents written before this change.
+        db.collection("Foods").document(group_id + "_" + openDating.getID())
                 .set(food)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        if (listener != null) listener.onSuccess();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error adding document", e);
+                        if (listener != null) listener.onFailure(e);
                     }
                 });
     }
@@ -96,12 +112,13 @@ public class FirestoreDBHelper implements IFoodnetDBHelper {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Map<String, Object> food = document.getData();
-                                OpenDating openDating = new OpenDating(food);
-                                listener.onGetReady(openDating);
-                            }
+                        // Always report back exactly once, including the "not found" case
+                        // (a successful query with zero matches) -- callers like the
+                        // duplicate-availability check depend on onGetReady firing even
+                        // when there's nothing to find.
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            Map<String, Object> food = task.getResult().getDocuments().get(0).getData();
+                            listener.onGetReady(new OpenDating(food));
                         } else {
                             listener.onGetReady(null);
                         }

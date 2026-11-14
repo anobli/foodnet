@@ -39,6 +39,9 @@ public class OpenDating {
     public static final String LOCATION = "Location";
     public static final String LABEL = "Label";
     public static final String KCAL = "Kcal";
+    public static final String COOKING_TEMP = "CookingTemp";
+    public static final String COOKING_TIME = "CookingTime";
+    public static final String PORTIONS = "Portions";
 
     public OpenDating(HashMap<String, String> hashMap) {
         this.hashMap = hashMap;
@@ -58,11 +61,12 @@ public class OpenDating {
         return true;
     }
 
-    protected boolean checkKcal() {
-        if (hashMap.containsKey(KCAL) && hashMap.get(KCAL) != null
-                && !((String) hashMap.get(KCAL)).isEmpty()) {
+    /** Optional field: valid if unset/empty, or a non-negative integer. */
+    protected boolean checkNonNegativeInt(String key) {
+        String value = hashMap.get(key);
+        if (value != null && !value.isEmpty()) {
             try {
-                if (Integer.parseInt(hashMap.get(KCAL)) < 0) {
+                if (Integer.parseInt(value) < 0) {
                     return false;
                 }
             } catch (NumberFormatException e) {
@@ -101,8 +105,10 @@ public class OpenDating {
             return false;
         }
 
-        if (!checkKcal()) {
-            return false;
+        for (String key : new String[]{KCAL, COOKING_TEMP, COOKING_TIME, PORTIONS}) {
+            if (!checkNonNegativeInt(key)) {
+                return false;
+            }
         }
 
         return true;
@@ -284,6 +290,47 @@ public class OpenDating {
 
     public void setKcal(String kcal) {
         hashMap.put(KCAL, kcal);
+    }
+
+    /**
+     * Return the cooking temperature (e.g. oven).
+     * @return The temperature, in degrees Celsius, or an empty string if unset
+     */
+    public String getCookingTemp() {
+        return getOrEmpty(COOKING_TEMP);
+    }
+
+    public void setCookingTemp(String cookingTemp) {
+        hashMap.put(COOKING_TEMP, cookingTemp);
+    }
+
+    /**
+     * Return the cooking time.
+     * @return The time, in minutes, or an empty string if unset
+     */
+    public String getCookingTime() {
+        return getOrEmpty(COOKING_TIME);
+    }
+
+    public void setCookingTime(String cookingTime) {
+        hashMap.put(COOKING_TIME, cookingTime);
+    }
+
+    /**
+     * Return the number of portions.
+     * @return The number of portions, or an empty string if unset
+     */
+    public String getPortions() {
+        return getOrEmpty(PORTIONS);
+    }
+
+    public void setPortions(String portions) {
+        hashMap.put(PORTIONS, portions);
+    }
+
+    private String getOrEmpty(String key) {
+        String value = hashMap.get(key);
+        return value != null ? value : "";
     }
 
     public HashMap<String, String> getHashMap() {

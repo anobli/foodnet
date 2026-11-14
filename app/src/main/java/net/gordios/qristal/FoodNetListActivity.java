@@ -29,7 +29,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -59,6 +58,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,13 +77,16 @@ public class FoodNetListActivity extends AppCompatActivity
         implements View.OnClickListener, OnDataEventListener, TabLayout.OnTabSelectedListener {
     private IFoodnetDBHelper db;
     private final ArrayList<OpenDating> netList = new ArrayList<>();
-    private ArrayAdapter<OpenDating> listViewAdapter;
+    private FoodNetAdapter listViewAdapter;
     private TabLayout tabLayout;
     private static final int RC_SIGN_IN = 123;
     private static final int QR_CODE_RESULT = 0;
     private ActivityResultLauncher<Intent> qrCodeScanLauncher;
     private ActivityResultLauncher<Intent> signInLauncher;
     private ActivityResultLauncher<String[]> requestPermissionsLauncher;
+    private ActivityResultLauncher<Intent> duplicateQrLauncher;
+    private String pendingDuplicateSourceId;
+    private Map<String, String> pendingDuplicateExtras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +109,12 @@ public class FoodNetListActivity extends AppCompatActivity
         db.registerOnDataChange(this);
         ListView listView = findViewById(R.id.FoodNetList);
         listViewAdapter = new FoodNetAdapter(this, this.netList, db);
+        listViewAdapter.setOnDuplicateRequestedListener(item -> {
+            pendingDuplicateSourceId = String.valueOf(item.getID());
+            pendingDuplicateExtras = new HashMap<>(item.getHashMap());
+            pendingDuplicateExtras.remove(OpenDating.ID);
+            duplicateQrLauncher.launch(new Intent(this, QrCodeScanActivity.class));
+        });
         listView.setAdapter(this.listViewAdapter);
         listView.setEmptyView(findViewById(R.id.empty_list_view));
         tabLayout = findViewById(R.id.tabLayout);
@@ -120,6 +129,40 @@ public class FoodNetListActivity extends AppCompatActivity
                     }
                 });
 
+        duplicateQrLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != 0 || result.getData() == null
+                            || !result.getData().hasExtra("url")) {
+                        return;
+                    }
+                    Uri scanned = Uri.parse(result.getData().getStringExtra("url"));
+                    String newId = scanned.getQueryParameter("id");
+                    if (newId == null || !"foodnet".equals(scanned.getScheme())
+                            || !"foodnet.bailon.ovh".equals(scanned.getHost())) {
+                        Toast.makeText(this, R.string.invalid_qr_code, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (newId.equals(pendingDuplicateSourceId)) {
+                        Toast.makeText(this, R.string.duplicate_same_qr_code, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    checkQrCodeAvailable(newId, available -> {
+                        if (!available) {
+                            Toast.makeText(this, R.string.duplicate_qr_already_used, Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        Intent duplicateIntent = new Intent(this, FoodNetActivity.class);
+                        duplicateIntent.setData(scanned);
+                        Bundle extras = new Bundle();
+                        for (Map.Entry<String, String> entry : pendingDuplicateExtras.entrySet()) {
+                            extras.putString(entry.getKey(), entry.getValue());
+                        }
+                        duplicateIntent.putExtra(FoodNetActivity.EXTRA_DUPLICATE_DATA, extras);
+                        startActivity(duplicateIntent);
+                    });
+                });
+
         signInLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -127,7 +170,19 @@ public class FoodNetListActivity extends AppCompatActivity
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         if (user != null) {
                             invalidateOptionsMenu();
-                            syncLocalToFirebase(user);
+                            String displayName = user.getDisplayName() != null
+                                    ? user.getDisplayName() : user.getEmail();
+                            syncLocalToFirebase(user, (hadLocalData, hadErrors) -> {
+                                String message;
+                                if (hadErrors) {
+                                    message = getString(R.string.signed_in_success_with_sync_error, displayName);
+                                } else if (hadLocalData) {
+                                    message = getString(R.string.signed_in_success_with_sync, displayName);
+                                } else {
+                                    message = getString(R.string.signed_in_success, displayName);
+                                }
+                                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                            });
                         } else {
                             Toast.makeText(this, R.string.sign_in_failed, Toast.LENGTH_LONG).show();
                         }
@@ -177,11 +232,33 @@ public class FoodNetListActivity extends AppCompatActivity
         ImageButton print_qr = findViewById(R.id.print_qr);
         print_qr.setOnClickListener(this);
 
-        ImageButton custom_qr = findViewById(R.id.custom_qr);
-        custom_qr.setOnClickListener(this);
-
         ImageButton scan_qr = findViewById(R.id.scan_qr);
         scan_qr.setOnClickListener(this);
+    }
+
+    private void showPrintQrChoiceDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.print_qr_choice_title);
+        builder.setItems(new CharSequence[]{
+                getString(R.string.print_qr_choice_basic),
+                getString(R.string.print_qr_choice_custom)
+        }, (dialog, which) -> {
+            if (which == 0) {
+                printBasicQrCodes();
+            } else {
+                showCustomQrWizard(new ArrayList<>());
+            }
+        });
+        builder.show();
+    }
+
+    private void printBasicQrCodes() {
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("foodnet").authority("foodnet.bailon.ovh");
+        Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
+        PrintHelper photoPrinter = new PrintHelper(this);
+        photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+        photoPrinter.printBitmap("QR code", sheet);
     }
 
     private void showCustomQrWizard(final List<String> labels) {
@@ -233,24 +310,84 @@ public class FoodNetListActivity extends AppCompatActivity
         photoPrinter.printBitmap(getString(R.string.custom_qr_print_job), sheet);
     }
 
-    private void syncLocalToFirebase(FirebaseUser user) {
+    private interface OnQrAvailabilityListener {
+        void onResult(boolean available);
+    }
+
+    /**
+     * Checks whether {@code qrId} isn't already assigned to an existing item.
+     * Uses a standalone helper/listener (not the activity's own {@code db}/{@code this}
+     * registration) so this lookup can't race with or clobber the main list-load flow.
+     */
+    private void checkQrCodeAvailable(String qrId, OnQrAvailabilityListener callback) {
+        IFoodnetDBHelper checkDb;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            checkDb = new FoodnetDBHelper(this);
+        } else {
+            SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
+            String group = sharedPreferences.getString("group", currentUser.getUid());
+            checkDb = new FirestoreDBHelper(this, group);
+        }
+        checkDb.registerOnDataChange(new OnDataEventListener() {
+            @Override
+            public void onGetAllReady(ArrayList<OpenDating> list) {
+            }
+
+            @Override
+            public void onGetReady(OpenDating existing) {
+                callback.onResult(existing == null);
+            }
+        });
+        checkDb.requestGet(Long.parseLong(qrId));
+    }
+
+    private interface OnSyncCompleteListener {
+        void onComplete(boolean hadLocalData, boolean hadErrors);
+    }
+
+    private void syncLocalToFirebase(FirebaseUser user, OnSyncCompleteListener callback) {
         SharedPreferences sharedPreferences = getSharedPreferences("foodnet", MODE_PRIVATE);
         String group = sharedPreferences.getString("group", user.getUid());
-        
+
         IFoodnetDBHelper localDb = new FoodnetDBHelper(this);
         ArrayList<OpenDating> localData = localDb.getAll();
-        
+
         IFoodnetDBHelper firestoreDb = new FirestoreDBHelper(this, group);
-        for (OpenDating item : localData) {
-            firestoreDb.add(item);
-        }
-        
-        localDb.deleteAll();
-        
         db = firestoreDb;
         db.registerOnDataChange(this);
         new FirestoreGroup().ensureGroupExists(user.getUid());
         requestGetAll();
+
+        if (localData.isEmpty()) {
+            callback.onComplete(false, false);
+            return;
+        }
+
+        int[] remaining = {localData.size()};
+        boolean[] hadError = {false};
+        for (OpenDating item : localData) {
+            firestoreDb.add(item, new IFoodnetDBHelper.OnAddCompleteListener() {
+                @Override
+                public void onSuccess() {
+                    // Only drop the local copy once it's confirmed safe in the cloud.
+                    localDb.delete(item);
+                    onItemDone();
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    hadError[0] = true;
+                    onItemDone();
+                }
+
+                private void onItemDone() {
+                    if (--remaining[0] == 0) {
+                        callback.onComplete(true, hadError[0]);
+                    }
+                }
+            });
+        }
     }
 
     private void syncFirebaseToLocal() {
@@ -300,14 +437,7 @@ public class FoodNetListActivity extends AppCompatActivity
     @Override
     public void onClick(@NonNull View v) {
         if (v.getId() ==  R.id.print_qr) {
-            Uri.Builder builder = new Uri.Builder();
-            builder.scheme("foodnet").authority("foodnet.bailon.ovh");
-            Bitmap sheet = QrCodeGenerator.createQrCodeSheet(builder, 4, 6);
-            PrintHelper photoPrinter = new PrintHelper(this);
-            photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-            photoPrinter.printBitmap("QR code", sheet);
-        } else if (v.getId() == R.id.custom_qr) {
-            showCustomQrWizard(new ArrayList<>());
+            showPrintQrChoiceDialog();
         } else if(v.getId() == R.id.scan_qr) {
                 Intent intent = new Intent(FoodNetListActivity.this, QrCodeScanActivity.class);
                 qrCodeScanLauncher.launch(intent);

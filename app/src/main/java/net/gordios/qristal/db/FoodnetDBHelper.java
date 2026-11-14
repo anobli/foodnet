@@ -31,7 +31,7 @@ import net.gordios.qristal.OpenDating;
 public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelper {
     private static final String TAG = "FoodNetSQLite";
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "FoodNet";
     private static final String TABLE_NOTE = "OpenDating";
 
@@ -42,6 +42,9 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
     private static final String COLUMN_OPENING_DATE = "OpeningDate";
     private static final String COLUMN_LOCATION = "Location";
     private static final String COLUMN_KCAL = "Kcal";
+    private static final String COLUMN_COOKING_TEMP = OpenDating.COOKING_TEMP;
+    private static final String COLUMN_COOKING_TIME = OpenDating.COOKING_TIME;
+    private static final String COLUMN_PORTIONS = OpenDating.PORTIONS;
 
     private Context context;
     private Locale locale;
@@ -54,6 +57,11 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
             + TABLE_NOTE + " ADD COLUMN " + COLUMN_LOCATION + " TEXT;";
     private static final String DATABASE_UPDATE_V3 = "ALTER TABLE "
             + TABLE_NOTE + " ADD COLUMN " + COLUMN_KCAL + " TEXT;";
+    private static final String[] DATABASE_UPDATE_V4 = {
+            "ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COLUMN_COOKING_TEMP + " TEXT;",
+            "ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COLUMN_COOKING_TIME + " TEXT;",
+            "ALTER TABLE " + TABLE_NOTE + " ADD COLUMN " + COLUMN_PORTIONS + " TEXT;",
+    };
 
     public FoodnetDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -73,7 +81,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
                 + COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_FOOD + " TEXT,"
                 + COLUMN_PROD_DATE + " TEXT," + COLUMN_EXP_DATE + " TEXT,"
                 + COLUMN_OPENING_DATE + " TEXT," + COLUMN_LOCATION + " TEXT,"
-                + COLUMN_KCAL + " TEXT" + ")";
+                + COLUMN_KCAL + " TEXT," + COLUMN_COOKING_TEMP + " TEXT,"
+                + COLUMN_COOKING_TIME + " TEXT," + COLUMN_PORTIONS + " TEXT" + ")";
         db.execSQL(script);
     }
 
@@ -85,22 +94,61 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         if (oldVersion < 3) {
             db.execSQL(DATABASE_UPDATE_V3);
         }
+        if (oldVersion < 4) {
+            for (String sql : DATABASE_UPDATE_V4) {
+                db.execSQL(sql);
+            }
+        }
     }
 
-    public void add(OpenDating openDating) {
+    /** Build an OpenDating from the current cursor row, looking columns up by name. */
+    private OpenDating fromCursor(Cursor cursor) {
+        OpenDating openDating = new OpenDating(
+                cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FOOD)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PROD_DATE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_EXP_DATE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_OPENING_DATE)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)), locale);
+        openDating.setKcal(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_KCAL)));
+        openDating.setCookingTemp(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COOKING_TEMP)));
+        openDating.setCookingTime(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COOKING_TIME)));
+        openDating.setPortions(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PORTIONS)));
+        return openDating;
+    }
 
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ID, openDating.getID());
+    private void putValues(ContentValues values, OpenDating openDating) {
         values.put(COLUMN_FOOD, openDating.getFood());
         values.put(COLUMN_PROD_DATE, openDating.getProdDate());
         values.put(COLUMN_EXP_DATE, openDating.getExpDate());
         values.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
         values.put(COLUMN_LOCATION, openDating.getLocation());
         values.put(COLUMN_KCAL, openDating.getKcal());
+        values.put(COLUMN_COOKING_TEMP, openDating.getCookingTemp());
+        values.put(COLUMN_COOKING_TIME, openDating.getCookingTime());
+        values.put(COLUMN_PORTIONS, openDating.getPortions());
+    }
+
+    public void add(OpenDating openDating) {
+        add(openDating, null);
+    }
+
+    public void add(OpenDating openDating, OnAddCompleteListener listener) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID, openDating.getID());
+        putValues(values, openDating);
 
         SQLiteDatabase db = this.getWritableDatabase();
-        db.insert(TABLE_NOTE, null, values);
+        long result = db.insert(TABLE_NOTE, null, values);
         db.close();
+
+        if (listener != null) {
+            if (result == -1) {
+                listener.onFailure(new Exception("Failed to insert into local database"));
+            } else {
+                listener.onSuccess();
+            }
+        }
     }
 
     @Override
@@ -127,13 +175,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
 
         if (cursor.moveToFirst()) {
             do {
-                OpenDating openingDate = new OpenDating(
-                        Long.parseLong(cursor.getString(0)),
-                        cursor.getString(1), cursor.getString(2),
-                        cursor.getString(3), cursor.getString(4),
-                        cursor.getString(5), locale);
-                openingDate.setKcal(cursor.getString(6));
-                noteList.add(openingDate);
+                noteList.add(fromCursor(cursor));
             } while (cursor.moveToNext());
         }
 
@@ -145,7 +187,8 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
 
         Cursor cursor = db.query(TABLE_NOTE, new String[] {
                 COLUMN_ID, COLUMN_FOOD, COLUMN_PROD_DATE, COLUMN_EXP_DATE, COLUMN_OPENING_DATE,
-                COLUMN_LOCATION, COLUMN_KCAL },
+                COLUMN_LOCATION, COLUMN_KCAL, COLUMN_COOKING_TEMP, COLUMN_COOKING_TIME,
+                COLUMN_PORTIONS },
                 COLUMN_ID + "=?", new String[] { String.valueOf(id) },
                 null, null, null, null);
         if (cursor != null) {
@@ -153,16 +196,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         }
 
         try {
-            OpenDating openingDate;
-            String food = cursor.getString(1);
-            String prodDate = cursor.getString(2);
-            String expDate = cursor.getString(3);
-            String openingpDate = cursor.getString(4);
-            String location = cursor.getString(5);
-            String kcal = cursor.getString(6);
-
-            openingDate = new OpenDating(id, food, prodDate, expDate, openingpDate, location);
-            openingDate.setKcal(kcal);
+            OpenDating openingDate = fromCursor(cursor);
             cursor.close();
             return openingDate;
         } catch (android.database.CursorIndexOutOfBoundsException ex) {
@@ -193,13 +227,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
 
         if (cursor.moveToFirst()) {
             do {
-                OpenDating openingDate = new OpenDating(
-                        Long.parseLong(cursor.getString(0)),
-                        cursor.getString(1), cursor.getString(2),
-                        cursor.getString(3), cursor.getString(4),
-                        cursor.getString(5), locale);
-                openingDate.setKcal(cursor.getString(6));
-                noteList.add(openingDate);
+                noteList.add(fromCursor(cursor));
             } while (cursor.moveToNext());
         }
 
@@ -213,12 +241,7 @@ public class FoodnetDBHelper extends SQLiteOpenHelper implements IFoodnetDBHelpe
         }
 
         ContentValues values = new ContentValues();
-        values.put(COLUMN_FOOD, openDating.getFood());
-        values.put(COLUMN_PROD_DATE, openDating.getProdDate());
-        values.put(COLUMN_EXP_DATE, openDating.getExpDate());
-        values.put(COLUMN_OPENING_DATE, openDating.getOpeningDate());
-        values.put(COLUMN_LOCATION, openDating.getLocation());
-        values.put(COLUMN_KCAL, openDating.getKcal());
+        putValues(values, openDating);
 
         SQLiteDatabase db = this.getWritableDatabase();
         int ret = db.update(TABLE_NOTE, values, COLUMN_ID + " = ?",

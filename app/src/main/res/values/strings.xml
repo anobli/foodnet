@@ -6,6 +6,12 @@
     <string name="openingDate">Opening Date</string>
     <string name="kcal">Calories (kcal)</string>
     <string name="kcalHint">e.g. 250</string>
+    <string name="cookingTemp">Cooking temp. (°C)</string>
+    <string name="cookingTempHint">e.g. 180</string>
+    <string name="cookingTime">Cooking time (min)</string>
+    <string name="cookingTimeHint">e.g. 25</string>
+    <string name="portions">Portions</string>
+    <string name="portionsHint">e.g. 4</string>
     <string name="save">Save</string>
     <string name="foodHint">Food name</string>
     <string name="prodDateHint">Production date</string>
@@ -21,7 +27,7 @@
     <string name="done">Done</string>
     <string name="camera_permission_denied">Camera permission has been denied. You won\'t be able to scan QR codes!</string>
     <string name="invalid_qr_code">The scanned QR code is not valid.</string>
-    <string name="invalid_food_item">Please check the food name, dates and calories: one of them is missing or not valid.</string>
+    <string name="invalid_food_item">Please check the food name, dates and numbers (calories, cooking, portions): one of them is missing or not valid.</string>
     <string name="delete_item_title">Delete item?</string>
     <string name="delete_item_message">Remove \"%s\" from your list? This can\'t be undone.</string>
     <string name="delete">Delete</string>
@@ -33,8 +39,11 @@
     <string name="fridge">Fridge</string>
     <string name="cupboard">Cupboard</string>
     <string name="all">All</string>
-    <string name="qr_print_content_desc">Print a few randomly generated QR codes</string>
+    <string name="qr_print_content_desc">Print QR codes</string>
     <string name="scan_qr_content_desc">Scan a QR code</string>
+    <string name="print_qr_choice_title">Print QR codes</string>
+    <string name="print_qr_choice_basic">Basic QR codes</string>
+    <string name="print_qr_choice_custom">Custom QR codes</string>
     <string name="delete_button_content_desc">Delete</string>
     <string name="duplicate_button_content_desc">Duplicate to another container</string>
     <string name="duplicate_same_qr_code">That\'s the same QR code. Scan a different one to duplicate onto it.</string>
@@ -62,4 +71,16 @@
     <string name="custom_qr_label_required">Enter a label first</string>
     <string name="sign_in_failed">Sign-in failed. Please try again.</string>
     <string name="sign_in_failed_reason">Sign-in failed: %s</string>
+    <string name="signed_in_success">Signed in as %s</string>
+    <string name="signed_in_success_with_sync">Signed in as %s. Your local items were synced to the cloud.</string>
+    <string name="signed_in_success_with_sync_error">Signed in as %s. Some items could not be synced to the cloud and were kept on this device.</string>
+    <string name="duplicate_row_button_content_desc">Duplicate to another container</string>
+    <string name="duplicate_qr_already_used">This QR code is already used by another item. Scan a different one.</string>
+    <string name="give_button_content_desc">Give to another person</string>
+    <string name="give_dialog_title">Give this item</string>
+    <string name="give_waiting_for_receipt">Waiting for the other phone to scan and save this item…</string>
+    <string name="give_sign_in_required">Sign in to give items to another person.</string>
+    <string name="give_start_failed">Couldn\'t start the transfer. Check your connection and try again.</string>
+    <string name="give_complete_failed">Saved, but couldn\'t notify the other phone. Ask them to delete it manually.</string>
+    <string name="give_completed">\"%s\" was received and removed from your list.</string>
 </resources>
